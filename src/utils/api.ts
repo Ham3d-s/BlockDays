@@ -5,7 +5,7 @@
  */
 export const fetchContent = async <T>(filename: string): Promise<T> => {
   try {
-    const response = await fetch(`/content/${filename}`);
+    const response = await fetch(`./content/${filename}`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch ${filename}: ${response.status} ${response.statusText}`);
