@@ -1,0 +1,1 @@
+const o=async r=>{try{const t=await fetch(`./content/${r}`);if(!t.ok)throw new Error(`Failed to fetch ${r}: ${t.status} ${t.statusText}`);return await t.json()}catch(t){throw console.error(`Error fetching ${r}:`,t),t}};export{o as f};
