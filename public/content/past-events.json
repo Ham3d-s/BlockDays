@@ -1,0 +1,56 @@
+[
+  {
+    "id": "event1",
+    "title": "میتاپ توسعه اسمارت کانترکت",
+    "description": "در این میتاپ به بررسی نحوه توسعه قراردادهای هوشمند با زبان سالیدیتی پرداختیم و مفاهیم پایه را آموزش دادیم.",
+    "date": "۲۲ مرداد ۱۴۰۲",
+    "category": "meetup",
+    "image": "https://images.pexels.com/photos/8369620/pexels-photo-8369620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example1"
+  },
+  {
+    "id": "event2",
+    "title": "کنفرانس بلاکچین تهران",
+    "description": "بزرگترین گردهمایی متخصصان بلاکچین کشور با حضور سخنرانان داخلی و بین‌المللی به همراه نمایشگاه جانبی.",
+    "date": "۱۰ اسفند ۱۴۰۱",
+    "category": "conference",
+    "image": "https://images.pexels.com/photos/7688460/pexels-photo-7688460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example2"
+  },
+  {
+    "id": "event3",
+    "title": "ویدیوکست: آینده وب۳",
+    "description": "در این ویدیوکست با دکتر علی محمدی درباره آینده وب۳ و فرصت‌های پیش روی توسعه‌دهندگان ایرانی گفتگو کردیم.",
+    "date": "۵ آذر ۱۴۰۱",
+    "category": "videocast",
+    "image": "https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example3"
+  },
+  {
+    "id": "event4",
+    "title": "میتاپ معرفی NFT",
+    "description": "آشنایی با مفهوم توکن‌های غیرمثلی (NFT)، کاربردها و فرصت‌های کسب‌وکاری آن برای هنرمندان و توسعه‌دهندگان.",
+    "date": "۱۸ مهر ۱۴۰۱",
+    "category": "meetup",
+    "image": "https://images.pexels.com/photos/8369651/pexels-photo-8369651.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example4"
+  },
+  {
+    "id": "event5",
+    "title": "ویدیوکست: امنیت در بلاکچین",
+    "description": "بررسی چالش‌های امنیتی در توسعه قراردادهای هوشمند و راهکارهای مقابله با آنها با حضور متخصصین امنیت.",
+    "date": "۷ شهریور ۱۴۰۱",
+    "category": "videocast",
+    "image": "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example5"
+  },
+  {
+    "id": "event6",
+    "title": "کنفرانس DeFi ایران",
+    "description": "اولین کنفرانس تخصصی فایننس غیرمتمرکز در ایران با حضور متخصصین و فعالان این حوزه.",
+    "date": "۲۰ تیر ۱۴۰۱",
+    "category": "conference",
+    "image": "https://images.pexels.com/photos/8370711/pexels-photo-8370711.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "youtubeLink": "https://youtube.com/watch?v=example6"
+  }
+]

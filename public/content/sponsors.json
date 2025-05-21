@@ -1,0 +1,58 @@
+[
+  {
+    "id": "sponsor1",
+    "name": "تکنو بلاک",
+    "logo": "https://images.pexels.com/photos/5324948/pexels-photo-5324948.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "financial",
+    "website": "https://example.com/technobloc"
+  },
+  {
+    "id": "sponsor2",
+    "name": "ایران چین",
+    "logo": "https://images.pexels.com/photos/5849577/pexels-photo-5849577.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "financial",
+    "website": "https://example.com/iranchain"
+  },
+  {
+    "id": "sponsor3",
+    "name": "دیفای هاب",
+    "logo": "https://images.pexels.com/photos/5980800/pexels-photo-5980800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "financial",
+    "website": "https://example.com/defihub"
+  },
+  {
+    "id": "sponsor4",
+    "name": "تک‌تاک",
+    "logo": "https://images.pexels.com/photos/5980856/pexels-photo-5980856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "media",
+    "website": "https://example.com/techtalk"
+  },
+  {
+    "id": "sponsor5",
+    "name": "صرافی نکست",
+    "logo": "https://images.pexels.com/photos/5980863/pexels-photo-5980863.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "financial",
+    "website": "https://example.com/nextex"
+  },
+  {
+    "id": "sponsor6",
+    "name": "انجمن بلاکچین ایران",
+    "logo": "https://images.pexels.com/photos/6230981/pexels-photo-6230981.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "moral",
+    "website": "https://example.com/blockchain-association"
+  },
+  {
+    "id": "sponsor7",
+    "name": "کریپتو نیوز",
+    "logo": "https://images.pexels.com/photos/6771900/pexels-photo-6771900.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "media",
+    "website": "https://example.com/cryptonews"
+  },
+  {
+    "id": "sponsor8",
+    "name": "دانشگاه تهران",
+    "logo": "https://images.pexels.com/photos/6694543/pexels-photo-6694543.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "type": "moral",
+    "website": "https://example.com/tehran-university"
+  }
+]

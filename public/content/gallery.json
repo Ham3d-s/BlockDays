@@ -1,0 +1,62 @@
+[
+  {
+    "id": "gallery1",
+    "title": "کنفرانس بلاکچین تهران",
+    "description": "تصویری از سالن اصلی کنفرانس بلاکچین تهران",
+    "date": "۱۰ اسفند ۱۴۰۱",
+    "category": "کنفرانس",
+    "type": "image",
+    "url": "https://images.pexels.com/photos/7688316/pexels-photo-7688316.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "thumbnail": "https://images.pexels.com/photos/7688316/pexels-photo-7688316.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "id": "gallery2",
+    "title": "میتاپ توسعه اسمارت کانترکت",
+    "description": "جلسه عملی آموزش سالیدیتی",
+    "date": "۲۲ مرداد ۱۴۰۲",
+    "category": "میتاپ",
+    "type": "image",
+    "url": "https://images.pexels.com/photos/8369651/pexels-photo-8369651.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "thumbnail": "https://images.pexels.com/photos/8369651/pexels-photo-8369651.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "id": "gallery3",
+    "title": "معرفی مفاهیم پایه بلاکچین",
+    "description": "آموزش مفاهیم پایه بلاکچین و کریپتوکارنسی",
+    "date": "۵ آذر ۱۴۰۱",
+    "category": "آموزشی",
+    "type": "video",
+    "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    "thumbnail": "https://images.pexels.com/photos/8370786/pexels-photo-8370786.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "id": "gallery4",
+    "title": "نمایشگاه جانبی کنفرانس",
+    "description": "غرفه‌های شرکت‌های فعال در حوزه بلاکچین",
+    "date": "۱۰ اسفند ۱۴۰۱",
+    "category": "کنفرانس",
+    "type": "image",
+    "url": "https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "thumbnail": "https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "id": "gallery5",
+    "title": "کارگاه آموزشی NFT",
+    "description": "آموزش ساخت و انتشار NFT برای هنرمندان",
+    "date": "۱۸ مهر ۱۴۰۱",
+    "category": "کارگاه",
+    "type": "video",
+    "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    "thumbnail": "https://images.pexels.com/photos/8369758/pexels-photo-8369758.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "id": "gallery6",
+    "title": "پنل تخصصی DeFi",
+    "description": "بررسی چالش‌ها و فرصت‌های DeFi در ایران",
+    "date": "۲۰ تیر ۱۴۰۱",
+    "category": "پنل",
+    "type": "image",
+    "url": "https://images.pexels.com/photos/8369849/pexels-photo-8369849.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "thumbnail": "https://images.pexels.com/photos/8369849/pexels-photo-8369849.jpeg?auto=compress&cs=tinysrgb&w=400"
+  }
+]

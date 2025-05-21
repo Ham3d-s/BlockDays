@@ -1,0 +1,32 @@
+[
+  {
+    "icon": "event",
+    "title": "برنامه‌ها",
+    "value": 124,
+    "tooltip": "تعداد کل برنامه‌های برگزار شده"
+  },
+  {
+    "icon": "calendar_today",
+    "title": "سال‌ها",
+    "value": 5,
+    "tooltip": "سال‌های فعالیت"
+  },
+  {
+    "icon": "people",
+    "title": "مهمانان",
+    "value": 87,
+    "tooltip": "تعداد مهمانان ویژه"
+  },
+  {
+    "icon": "groups",
+    "title": "شرکت‌کنندگان",
+    "value": 3500,
+    "tooltip": "تعداد کل شرکت‌کنندگان"
+  },
+  {
+    "icon": "business",
+    "title": "حامیان",
+    "value": 42,
+    "tooltip": "تعداد حامیان مالی و معنوی"
+  }
+]

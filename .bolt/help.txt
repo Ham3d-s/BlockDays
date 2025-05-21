@@ -1,0 +1,23 @@
+Features
+Admin Panel: Visit /admin in your app to access the CMS (default password: blockdays2024).
+Section Editors: Edit, add, delete, and export content for:
+FAQ (faq.json)
+Gallery (images/videos, gallery.json)
+Past Events (past-events.json)
+Sponsors (sponsors.json)
+Stats (stats.json)
+Upcoming Event (upcoming-event.json)
+Export: Download the updated JSON for each section. Replace the corresponding file in /public/content/ to update the live site.
+No Backend: All logic runs in the browser. No server, no database, no cloud.
+How to Use
+Go to /admin (e.g., http://localhost:5173/admin).
+Login with the password (blockdays2024 by default).
+Edit content in any section. Add, edit, or delete items.
+Export the JSON file after making changes.
+Replace the corresponding file in /public/content/ in your project to update the site.
+Next Steps & Recommendations
+Security: For production, change the admin password in AdminCMS.tsx.
+Image/Video Uploads: Currently, you provide URLs for images/videos. For true file uploads, you’d need to add a file-to-base64 converter or instruct admins to upload files to /public/images/ or /public/videos/ and use the relative path.
+Import/Restore: You can add an import feature to restore JSON files if needed.
+UI Polish: The CMS uses DaisyUI and matches your site’s style, but you can further refine the UI as desired.
+You now have a fully serverless, browser-based CMS for your landing page!
