@@ -140,8 +140,7 @@ We welcome contributions from the community!
 ## Contact
 
 - **Project Lead:** [Ham3d-s](https://github.com/Ham3d-s)
-- **Email:** [YourContactEmail@example.com](mailto:YourContactEmail@example.com) <!-- Replace with your email -->
-- **Telegram:** [@yourtelegram](https://t.me/yourtelegram) <!-- Optional -->
+- **Telegram:** [@yourtelegram](https://t.me/Ham3ds) <!-- Optional -->
 
 ---
 
