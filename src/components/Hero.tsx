@@ -5,7 +5,7 @@ const Hero: React.FC = () => {
   return (
     <section 
       id="hero"
-      className="min-h-screen relative flex items-center justify-center bg-gradient-to-b from-base-300 via-base-200 to-base-100 py-12 md:py-20"
+      className="min-h-screen relative flex items-center justify-center bg-gradient-to-b from-base-300 via-base-200 to-base-100 py-16 md:py-24"
     >
       <div className="container mx-auto px-4 text-center z-10">
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">

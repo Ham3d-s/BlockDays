@@ -147,6 +147,7 @@ const Sponsors: React.FC = () => {
                   <img 
                     src={sponsor.logo} 
                     alt={sponsor.name}
+                    loading="lazy"
                     className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x80?text=Logo'; }}
                   />

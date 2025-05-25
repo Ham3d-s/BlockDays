@@ -308,6 +308,7 @@ const UpcomingEvent: React.FC = () => {
                   <img
                     src={event.image || `/images/events/default-${event.type}.jpg`} // Fallback image
                     alt={event.title}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     onError={(e) => {
                       e.currentTarget.src = `/images/events/default-event.jpg`; // Generic fallback

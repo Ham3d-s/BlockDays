@@ -150,7 +150,7 @@ const PastEvents: React.FC = () => {
 
   const categoryIcons: Record<PastEvent['category'], React.ReactNode> = {
     meetup: <Users size={16} className="ml-1" />,
-    conference: <Users2 size={16} className="ml-1" />, // Changed icon for conference
+    conference: <Users size={16} className="ml-1" />, // Corrected Users2 to Users
     videocast: <Tv size={16} className="ml-1" />,    // Changed icon for videocast
     workshop: <ListChecks size={16} className="ml-1" />,
     webinar: <Clock size={16} className="ml-1" />, // Changed icon for webinar
@@ -247,6 +247,13 @@ const PastEvents: React.FC = () => {
     const isLeft = index % 2 === 0;
     const formattedDate = event.date; // Assuming date is already in desired Farsi format for demo
 
+    // Placeholder image logic
+    const placeholderImage = 'https://via.placeholder.com/400x200?text=Event+Image+Not+Available';
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      e.currentTarget.src = placeholderImage;
+      e.currentTarget.alt = 'تصویر جایگزین برای رویداد'; // Alt text for placeholder
+    };
+
     return (
       <div className={`flex md:contents`}>
         {isLeft && <div className="col-start-5 col-end-6 md:mx-auto relative mr-10 md:mr-0">
@@ -259,6 +266,18 @@ const PastEvents: React.FC = () => {
         </div>}
         
         <div className={`bg-base-200 col-start-6 col-end-10 p-4 sm:p-6 rounded-xl my-4 mr-auto shadow-md w-full md:w-auto ${isLeft ? 'md:ml-auto md:mr-0' : 'md:mr-auto'}`}>
+          {/* Image for the event - conceptual, as PastEvent doesn't have image in TimelineCard */}
+          {/* If an image were here, it would be:
+          <figure className="mb-4 h-40 rounded-md overflow-hidden bg-base-300">
+            <img 
+              src={event.image || placeholderImage} 
+              alt={event.title || 'تصویر رویداد'} 
+              loading="lazy"
+              className="w-full h-full object-cover"
+              onError={handleImageError}
+            />
+          </figure>
+          */}
           <div className="flex items-center justify-between mb-3">
             <span className="font-semibold text-primary text-sm flex items-center">
               {categoryIcons[event.category]}
