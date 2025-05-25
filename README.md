@@ -154,7 +154,3 @@ We welcome contributions from the community!
 ---
 
 Made with ❤️
-
----
-
-Let me know if you want any part of this README tailored further (e.g., add badges, deployment instructions, or a Persian translation)!
