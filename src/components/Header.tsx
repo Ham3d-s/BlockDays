@@ -131,16 +131,17 @@ const Header: React.FC = () => {
             <button 
               className="btn btn-ghost btn-sm w-full justify-start gap-2"
               onClick={toggleTheme}
+              aria-label={`تغییر به حالت ${theme === 'light' ? 'تاریک' : 'روشن'}`}
             >
               {theme === 'light' ? (
                 <>
                   <Moon size={18} />
-                  حالت تاریک
+                  <span>حالت تاریک</span>
                 </>
               ) : (
                 <>
                   <Sun size={18} />
-                  حالت روشن
+                  <span>حالت روشن</span>
                 </>
               )}
             </button>
