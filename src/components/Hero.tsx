@@ -4,45 +4,38 @@ import { ArrowDown } from 'lucide-react';
 const Hero: React.FC = () => {
   return (
     <section 
-      id="hero" 
-      className="min-h-screen relative flex items-center justify-center bg-gradient-to-b from-base-300 via-base-200 to-base-100"
+      id="hero"
+      className="min-h-screen relative flex items-center justify-center bg-gradient-to-b from-base-300 via-base-200 to-base-100 py-12 md:py-20"
     >
-      <div className="container mx-auto px-4 text-center z-10 scroll-animate">
-        <span className="inline-block text-sm md:text-base font-semibold text-primary mb-4 tracking-wider uppercase">
-          بزرگترین رویداد بلاکچین ایران
-        </span>
-        
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
+      <div className="container mx-auto px-4 text-center z-10">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
           بلاک دیز
         </h1>
         
-        <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto leading-relaxed">
-          محل گردهمایی توسعه‌دهندگان و علاقه‌مندان به تکنولوژی بلاکچین
+        <p className="text-lg md:text-xl lg:text-2xl mb-10 max-w-3xl mx-auto leading-relaxed text-base-content/80">
+          دروازه شما به دنیای رویدادهای بلاکچین در ایران و منطقه فارسی‌زبان. با بلاک‌دیز رویدادهای بلاکچین را کشف، سازماندهی و جشن بگیرید.
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button 
-            className="btn btn-primary btn-lg group"
+            className="btn btn-primary btn-lg group shadow-lg hover:shadow-xl transition-shadow duration-300"
             onClick={() => {
-              document.getElementById('upcoming-event-section')?.scrollIntoView({ behavior: 'smooth' });
+              // Assuming 'explore-events' is the ID of the section to scroll to
+              document.getElementById('explore-events')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            مشاهده رویداد بعدی
-            <ArrowDown className="w-5 h-5 transition-transform group-hover:translate-y-1" />
+            کاوش رویدادها
+            {/* Optional: Icon can be added here if desired */}
           </button>
           
           <button 
-            className="btn btn-outline btn-lg"
+            className="btn btn-outline btn-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
             onClick={() => {
               document.getElementById('past-events')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
             رویدادهای گذشته
           </button>
-        </div>
-        
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ArrowDown className="w-6 h-6 text-primary" />
         </div>
       </div>
     </section>
