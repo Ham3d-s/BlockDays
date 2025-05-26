@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, MouseEvent } from 'react'; // Added useRef, MouseEvent
+import React, { useState, useEffect } from 'react'; // Removed useRef, MouseEvent
 import { fetchContent } from '../utils/api';
 import { Handshake } from 'lucide-react';
 
@@ -50,43 +50,8 @@ const Sponsors: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Refs and state for drag scrolling
-  const trackRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
-  const [isDragging, setIsDragging] = useState<boolean[]>([false, false, false]);
-  const [startX, setStartX] = useState<number[]>([0, 0, 0]);
-  const [scrollLeftStart, setScrollLeftStart] = useState<number[]>([0, 0, 0]);
-
-  const handleMouseDown = (e: MouseEvent<HTMLDivElement>, index: number) => {
-    if (!trackRefs[index].current) return;
-    e.preventDefault(); // Prevent text selection and other default drag behaviors
-    trackRefs[index].current!.style.animationPlayState = 'paused';
-    setIsDragging(prev => { const newArr = [...prev]; newArr[index] = true; return newArr; });
-    setStartX(prev => { const newArr = [...prev]; newArr[index] = e.pageX - trackRefs[index].current!.offsetLeft; return newArr; });
-    setScrollLeftStart(prev => { const newArr = [...prev]; newArr[index] = trackRefs[index].current!.scrollLeft; return newArr; });
-  };
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>, index: number) => {
-    if (!isDragging[index] || !trackRefs[index].current) return;
-    e.preventDefault();
-    const x = e.pageX - trackRefs[index].current!.offsetLeft;
-    const walk = (x - startX[index]) * 1.5; // scroll-fast factor
-    trackRefs[index].current!.scrollLeft = scrollLeftStart[index] - walk;
-  };
-
-  const handleMouseUpOrLeave = (index: number) => {
-    // Check if it was actually dragging this specific track before resetting
-    if (!isDragging[index] || !trackRefs[index].current) return; 
-    
-    setIsDragging(prev => {
-      const newArr = [...prev];
-      newArr[index] = false;
-      return newArr;
-    });
-    // Optional: Decide if animation should resume. For now, it stays paused.
-    // if (trackRefs[index].current) {
-    //   trackRefs[index].current!.style.animationPlayState = 'running'; // Or keep paused
-    // }
-  };
+  // Removed refs and state for drag scrolling (trackRefs, isDragging, startX, scrollLeftStart)
+  // Removed event handlers (handleMouseDown, handleMouseMove, handleMouseUpOrLeave)
 
   useEffect(() => {
     const loadSponsors = async () => {
@@ -205,72 +170,38 @@ const Sponsors: React.FC = () => {
     );
   }
 
-  // Logic for new logo display
-  const displaySponsors = sponsors.slice(0, 18); // Take up to 18 sponsors
-  const rowSize = 6;
-  const rows: SponsorEntry[][] = [];
-  for (let i = 0; i < displaySponsors.length; i += rowSize) {
-    rows.push(displaySponsors.slice(i, i + rowSize));
-  }
-  // Ensure there are up to 3 rows for the structure, even if some are empty or partially filled.
-  // The rendering will handle empty or partially filled rows gracefully.
-
-  // renderSponsorTier REMOVED
+  // Removed logic for displaySponsors and rows for animated display
 
   return (
     <section id="sponsors" className="py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16 text-primary">
-          {/* Handshake icon removed from title */}
           با حامیان ما آشنا شوید
         </h2>
         
-        {/* New animated logo display */}
-        {sponsors.length > 0 && ( // Only render if there are sponsors
-          <div className="space-y-2 md:space-y-4"> {/* Container for the three rows */}
-            {rows.map((rowSponsors, rowIndex) => {
-              if (rowSponsors.length === 0) return null; // Don't render empty rows
-              return (
-                <div key={rowIndex} className="logo-row-container">
-                  <div
-                    ref={trackRefs[rowIndex]}
-                    className={`logo-track ${
-                      rowIndex === 1 ? 'animate-scroll-right' : 'animate-scroll-left'
-                    } ${isDragging[rowIndex] ? 'cursor-grabbing' : 'cursor-grab'}`}
-                    onMouseDown={(e) => handleMouseDown(e, rowIndex)}
-                    onMouseMove={(e) => handleMouseMove(e, rowIndex)}
-                    onMouseUp={() => handleMouseUpOrLeave(rowIndex)}
-                    onMouseLeave={() => handleMouseUpOrLeave(rowIndex)}
-                    style={{ userSelect: isDragging[rowIndex] ? 'none' : 'auto' }}
-                  >
-                    {/* Render logos twice for seamless scroll */}
-                    {[...rowSponsors, ...rowSponsors].map((sponsor, imgIndex) => (
-                      <a 
-                        key={`${sponsor.id}-${imgIndex}-${rowIndex}`} // Unique key considering duplication and row
-                        href={sponsor.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={sponsor.name}
-                        className="flex-shrink-0"
-                        draggable="false" // Prevent native anchor drag
-                      >
-                        <img
-                          src={sponsor.logo}
-                          alt={sponsor.name}
-                          loading="lazy"
-                          className="h-16 mx-6 object-contain" // pointer-events: none; will be in CSS
-                          draggable="false" // Prevent native image drag
-                          onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo'; }}
-                        />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+        {sponsors.length > 0 && (
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 py-8">
+            {sponsors.map(sponsor => ( // Directly map over the 'sponsors' state
+              <a
+                key={sponsor.id}
+                href={sponsor.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={sponsor.name}
+                className="flex items-center justify-center p-2 aspect-[3/2] transition-opacity hover:opacity-75"
+              >
+                <img
+                  src={sponsor.logo}
+                  alt={sponsor.name}
+                  loading="lazy"
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo'; }}
+                />
+              </a>
+            ))}
           </div>
         )}
-        {/* Fallback for empty state is handled above by checking sponsors.length === 0 */}
+        {/* Empty state is handled by the existing check: sponsors.length === 0 && !isLoading */}
       </div>
     </section>
   );

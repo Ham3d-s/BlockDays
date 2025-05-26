@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, MouseEvent } from 'react'; // Added useRef, MouseEvent
+import React, { useState, useEffect, useRef, MouseEvent, TouchEvent as ReactTouchEvent } from 'react'; // Added ReactTouchEvent
 import { fetchContent } from '../utils/api';
-import { Maximize, Download } from 'lucide-react'; // Removed ImageIconLucide
+import { Maximize, Download } from 'lucide-react';
 
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -153,39 +153,79 @@ const ImageGallery: React.FC = () => {
     }
   }, [galleryImages, isLoading]);
 
-  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+  // Unified drag start logic
+  const unifiedDragStart = (clientX: number) => {
     if (!trackRef.current) return;
-    e.preventDefault();
-    dragOccurred.current = false; // Reset drag flag
-    if (enableAnimation && trackRef.current.style.animationPlayState !== 'paused') {
-      trackRef.current.style.animationPlayState = 'paused';
+    if (enableAnimation && trackRef.current.style.animationPlayState !== 'paused') { // Ensure animation is paused only if it was running
+        trackRef.current.style.animationPlayState = 'paused';
     }
     setIsDragging(true);
-    setStartX(e.pageX - trackRef.current.offsetLeft);
+    setStartX(clientX - trackRef.current.offsetLeft);
     setScrollLeftStart(trackRef.current.scrollLeft);
+    dragOccurred.current = false; 
   };
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+  // Unified drag move logic
+  const unifiedDragMove = (clientX: number) => {
     if (!isDragging || !trackRef.current) return;
-    e.preventDefault();
-    dragOccurred.current = true; // Set drag flag
-    const x = e.pageX - trackRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // scroll-fast factor
+    const x = clientX - trackRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; 
     trackRef.current.scrollLeft = scrollLeftStart - walk;
+    if (Math.abs(walk) > 5) { 
+       dragOccurred.current = true;
+    }
   };
 
-  const handleMouseUpOrLeave = () => {
-    if (isDragging) {
-      setIsDragging(false);
-      // Optionally resume animation if it was enabled - for now, keep it paused on user interaction
-      // if (enableAnimation && trackRef.current) {
-      //   trackRef.current.style.animationPlayState = 'running';
-      // }
+  // Unified drag end logic
+  const unifiedDragEnd = () => {
+    if (!isDragging) return; 
+    setIsDragging(false);
+    // Animation remains paused after user interaction
+  };
+
+  // Mouse handlers
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault(); 
+    unifiedDragStart(e.pageX);
+  };
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return; 
+    unifiedDragMove(e.pageX);
+  };
+  const handleMouseUp = () => { 
+    unifiedDragEnd();
+    if (dragOccurred.current) { // Reset only if a drag actually occurred
+      setTimeout(() => { dragOccurred.current = false; }, 0);
     }
-    // setTimeout to reset dragOccurred after click event could fire
-    setTimeout(() => {
-        dragOccurred.current = false;
-    }, 0);
+  };
+  const handleMouseLeave = () => { 
+       if (isDragging) { 
+          unifiedDragEnd();
+          if (dragOccurred.current) {
+            setTimeout(() => { dragOccurred.current = false; }, 0);
+          }
+       }
+  };
+
+  // Touch handlers
+  const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 1) { 
+      // e.preventDefault(); // Consider if this is needed based on testing scroll behavior
+      unifiedDragStart(e.touches[0].clientX);
+    }
+  };
+  const handleTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    // e.preventDefault(); // Consider if this is needed
+    if (e.touches.length === 1) {
+      unifiedDragMove(e.touches[0].clientX);
+    }
+  };
+  const handleTouchEnd = () => {
+    unifiedDragEnd();
+    if (dragOccurred.current) {
+      setTimeout(() => { dragOccurred.current = false; }, 0);
+    }
   };
   
   const openLightboxAtIndex = (index: number) => {
@@ -254,10 +294,14 @@ const ImageGallery: React.FC = () => {
             className={`gallery-track flex items-center ${enableAnimation ? 'animate-scroll-gallery-rtl' : ''} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUpOrLeave}
-            onMouseLeave={handleMouseUpOrLeave}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             style={{ 
                 userSelect: isDragging ? 'none' : 'auto',
+                touchAction: 'pan-y', // Allow vertical page scroll on touch devices
                 // animationPlayState will be controlled via JS on interaction
             }}
           >
