@@ -92,26 +92,78 @@ const Sponsors: React.FC = () => {
     const loadSponsors = async () => {
       try {
         setIsLoading(true);
+        let finalSponsorsToSet: SponsorEntry[];
+
         if (DEMO_MODE) {
-          setSponsors(DEMO_SPONSORS);
-        } else {
-          const fetchedData = await fetchContent<any[]>('sponsors.json');
-          // Tier mapping is removed, but structure is kept for now.
-          // Description and tier might not be directly used in the new design but are kept in data.
-          const mappedData: SponsorEntry[] = fetchedData.map(item => ({
-            id: item.id,
-            name: item.name,
-            logo: item.logo,
-            tier: item.tier || 'Silver', // Default tier if not provided
-            description: item.description || 'حامی رویداد بلاک دیز',
-            websiteUrl: item.website,
+          finalSponsorsToSet = DEMO_SPONSORS.map(ds => ({ // Ensure demo sponsors are also fully formed
+            ...ds,
+            id: ds.id || `demo-id-${Math.random().toString(36).substr(2, 9)}`,
+            name: ds.name || "Demo Sponsor",
+            logo: ds.logo || "https://via.placeholder.com/150x60?text=Demo+Logo",
+            tier: ds.tier || 'Community',
+            description: ds.description || `Demo sponsor description for ${ds.name || "Demo Sponsor"}`,
+            websiteUrl: ds.websiteUrl || '#',
           }));
-          setSponsors(mappedData);
+        } else {
+          let liveSponsors: SponsorEntry[] = [];
+          try {
+            const fetchedData = await fetchContent<any[]>('sponsors.json');
+            if (fetchedData && fetchedData.length > 0) {
+                liveSponsors = fetchedData.map((item: any) => ({
+                    id: item.id || `live-id-${Math.random().toString(36).substr(2, 9)}`,
+                    name: item.name || "Unnamed Sponsor",
+                    logo: item.logo, // Assuming logo URL must be present
+                    tier: item.tier || 'Community', // Default tier if not specified
+                    description: item.description || `Sponsor: ${item.name || "Unnamed"}`,
+                    websiteUrl: item.website || '#',
+                })).filter(sponsor => sponsor.logo); // Filter out sponsors without a logo
+            }
+          } catch (fetchErr) {
+             console.warn('Fetching sponsors.json failed or it was empty, will use demo sponsors for supplementation.', fetchErr);
+             // liveSponsors will remain empty if fetchContent itself throws or returns null/empty
+          }
+
+
+          finalSponsorsToSet = [...liveSponsors];
+          const requiredSponsors = 18;
+
+          if (finalSponsorsToSet.length < requiredSponsors) {
+            const demoSponsorsProcessed: SponsorEntry[] = DEMO_SPONSORS.map(ds => ({
+                ...ds,
+                id: ds.id || `demo-fill-id-${Math.random().toString(36).substr(2, 9)}`,
+                name: ds.name || "Demo Sponsor",
+                logo: ds.logo || "https://via.placeholder.com/150x60?text=Demo+Logo",
+                tier: ds.tier || 'Community',
+                description: ds.description || `Demo sponsor description for ${ds.name || "Demo Sponsor"}`,
+                websiteUrl: ds.websiteUrl || '#',
+            }));
+
+            for (const demoSponsor of demoSponsorsProcessed) {
+              if (finalSponsorsToSet.length >= requiredSponsors) break;
+              if (!finalSponsorsToSet.some(s => s.id === demoSponsor.id)) {
+                finalSponsorsToSet.push(demoSponsor);
+              }
+            }
+          }
         }
-      } catch (err) {
-        console.error('Failed to load sponsors:', err);
-        setError('خطا در بارگذاری اطلاعات حامیان. لطفاً بعداً دوباره تلاش کنید.');
-        if (DEMO_MODE) setSponsors(DEMO_SPONSORS);
+        
+        // The rendering logic already handles slicing to 18 by how it forms rows.
+        // We just provide the (potentially supplemented) list.
+        setSponsors(finalSponsorsToSet);
+
+      } catch (err) { // Catch errors from the outer try block (e.g., issues not related to fetchContent directly)
+        console.error('Error in loadSponsors, falling back to DEMO_SPONSORS:', err);
+        setError('خطا در بارگذاری اطلاعات حامیان. نمایش حامیان پیش‌فرض.');
+        const demoSponsorsOnError = DEMO_SPONSORS.map(ds => ({
+            ...ds,
+            id: ds.id || `demo-error-id-${Math.random().toString(36).substr(2, 9)}`,
+            name: ds.name || "Demo Sponsor",
+            logo: ds.logo || "https://via.placeholder.com/150x60?text=Demo+Logo",
+            tier: ds.tier || 'Community',
+            description: ds.description || `Demo sponsor description for ${ds.name || "Demo Sponsor"}`,
+            websiteUrl: ds.websiteUrl || '#',
+        }));
+        setSponsors(demoSponsorsOnError);
       } finally {
         setIsLoading(false);
       }
