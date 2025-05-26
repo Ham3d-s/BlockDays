@@ -37,7 +37,7 @@ interface GalleryImage {
   height?: number;      // Optional: for better layout if known
 }
 
-const DEMO_MODE = true; // Enable to use hardcoded demo images
+const DEMO_MODE = false; // Enable to use hardcoded demo images
 
 const DEMO_IMAGES: GalleryImage[] = [
   { 

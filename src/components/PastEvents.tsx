@@ -22,7 +22,7 @@ interface PastEvent {
   };
 }
 
-const DEMO_MODE = true; // Enable demo mode to use hardcoded data
+const DEMO_MODE = false; // Enable demo mode to use hardcoded data
 
 const DEMO_PAST_EVENTS: PastEvent[] = [
   {

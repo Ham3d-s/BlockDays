@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { fetchContent } from '../utils/api'; // Import fetchContent
 import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, Text } from 'recharts';
-import { Users, Users2, BarChart3, Clock, Award, TrendingUp, PieChart as PieIcon } from 'lucide-react';
+import { Users, Users2, BarChart3, Clock, Award, TrendingUp, PieChart as PieIcon, HelpCircle } from 'lucide-react'; // Added HelpCircle for default
+
+// Interface for data from stats.json
+interface JsonStatItem {
+  icon: string; // Icon name as string e.g., "Award", "Users", "Clock"
+  title: string;
+  value: number;
+  tooltip: string; // This will be mapped to 'context'
+  suffix?: string;
+}
 
 interface StatItem {
   id: string;
@@ -38,26 +48,78 @@ const Stats: React.FC = () => {
   const [statsData, setStatsData] = useState<StatItem[]>(initialStatsData);
   const statsRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  
-  const { observeElement, unobserveElement } = useIntersectionObserver();
+  const { observeElement } = useIntersectionObserver();
+
+  // Helper function to map icon string to ReactNode
+  const mapIconStringToNode = (iconString?: string): React.ReactNode => {
+    const iconProps = { className: "w-10 h-10" };
+    switch (iconString?.toLowerCase()) {
+      case 'award':
+      case 'events': // Added alias based on initialStatsData id
+        return <Award {...iconProps} />;
+      case 'users':
+      case 'participants': // Added alias
+        return <Users {...iconProps} />;
+      case 'users2':
+      case 'speakers': // Added alias
+        return <Users2 {...iconProps} />;
+      case 'clock':
+      case 'hours': // Added alias
+        return <Clock {...iconProps} />;
+      default:
+        console.warn(`Unknown icon string: ${iconString}, using default.`);
+        return <HelpCircle {...iconProps} />; // Default icon
+    }
+  };
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const jsonStats = await fetchContent<JsonStatItem[]>('stats.json');
+        if (jsonStats && jsonStats.length > 0) {
+          const transformedStats: StatItem[] = jsonStats.map((item, index) => ({
+            id: item.title.toLowerCase().replace(/\s+/g, '-') || `stat-${index}`, // Generate ID
+            icon: mapIconStringToNode(item.icon),
+            title: item.title,
+            value: item.value,
+            context: item.tooltip, // Map tooltip to context
+            suffix: item.suffix || (item.value > 1000 ? '+' : undefined), // Example default suffix logic
+          }));
+          setStatsData(transformedStats);
+        } else {
+          console.warn('Fetched stats.json is empty or invalid, using initial hardcoded data.');
+          setStatsData(initialStatsData); // Fallback to initial data
+        }
+      } catch (error) {
+        console.error('Failed to fetch or process stats.json:', error);
+        setStatsData(initialStatsData); // Fallback to initial data on error
+      }
+    };
+
+    loadStats();
+  }, []); // Empty dependency array to run once on mount
 
   useEffect(() => {
     const currentRef = statsRef.current;
+    let disconnectObserver: (() => void) | null = null;
+
     if (currentRef) {
-      observeElement(currentRef, (isIntersecting) => {
+      disconnectObserver = observeElement(currentRef, (isIntersecting) => {
         if (isIntersecting) {
           setIsVisible(true);
-          // Optional: unobserve after first intersection if animation should only run once
-          // unobserveElement(currentRef); 
+          if (disconnectObserver) {
+            disconnectObserver();
+          }
         }
       });
     }
     return () => {
-      if (currentRef) {
-        unobserveElement(currentRef);
+      if (disconnectObserver) {
+        disconnectObserver();
       }
     };
-  }, [observeElement, unobserveElement]);
+  }, [observeElement]);
+
 
   useEffect(() => {
     if (isVisible && statsData.length > 0) {
@@ -65,7 +127,7 @@ const Stats: React.FC = () => {
         animateStat(stat.id, stat.value);
       });
     }
-  }, [isVisible, statsData]);
+  }, [isVisible, statsData]); // Keep this effect for animation logic
 
   const animateStat = (statId: string, targetValue: number) => {
     const element = document.getElementById(`stat-value-${statId}`);

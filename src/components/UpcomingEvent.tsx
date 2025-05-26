@@ -22,7 +22,7 @@ interface UpcomingEvent {
 }
 
 // Demo mode toggle (set to true to always show demo events)
-const DEMO_MODE = true; // Set to true for demo/testing with new features
+const DEMO_MODE = false; // Set to true for demo/testing with new features
 
 const DEFAULT_EVENTS: UpcomingEvent[] = [
   {

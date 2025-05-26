@@ -37,6 +37,8 @@ const Footer: React.FC = () => {
     }
   };
 
+  // TODO: Implement actual pages/sections for these 'Important Links' or remove them permanently.
+  /*
   const importantLinks = [
     { href: '#about-us', label: 'درباره ما', icon: <Users size={16} className="ml-2" /> },
     { href: '#privacy-policy', label: 'سیاست حفظ حریم خصوصی', icon: <Shield size={16} className="ml-2" /> },
@@ -44,6 +46,7 @@ const Footer: React.FC = () => {
     { href: '#contact-us', label: 'تماس با ما', icon: <Mail size={16} className="ml-2" /> },
     // { href: '#careers', label: 'فرصت‌های شغلی', icon: <Briefcase size={16} className="ml-2" /> }, // Example of another link
   ];
+  */
 
   const socialMediaLinks = [
     { href: 'https://twitter.com/BlockDaysIran', label: 'Twitter', icon: <Twitter size={20} />, name: 'توییتر' },
@@ -69,6 +72,7 @@ const Footer: React.FC = () => {
           {/* Column 2: Important Links */}
           <div className="md:col-start-auto"> {/* Adjusted for potential 3-col on md */}
             <h3 className="text-lg font-semibold mb-4 text-secondary">لینک‌های مهم</h3>
+            {/*
             <ul className="space-y-2">
               {importantLinks.map(link => (
                 <li key={link.label}>
@@ -78,6 +82,7 @@ const Footer: React.FC = () => {
                 </li>
               ))}
             </ul>
+            */}
           </div>
 
           {/* Column 3: Newsletter */}
