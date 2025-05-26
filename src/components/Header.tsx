@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, X, Calendar, Users, Image, Building2, HelpCircle, Phone } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import { Menu, X, Calendar, Users, Image, Building2, HelpCircle, Phone } from 'lucide-react'; // Removed Sun, Moon
+// import { useTheme } from '../contexts/ThemeContext'; // Removed ThemeContext usage
+import ThemeSwitcher from './ThemeSwitcher'; // Added ThemeSwitcher import
 
 const Header: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme(); // Removed ThemeContext usage
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -94,13 +95,7 @@ const Header: React.FC = () => {
             تماس با ما
           </button>
           
-          <button 
-            className="btn btn-ghost btn-circle btn-sm"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
+          <ThemeSwitcher /> {/* Added ThemeSwitcher to desktop nav */}
         </nav>
       </div>
 
@@ -128,23 +123,9 @@ const Header: React.FC = () => {
               تماس با ما
             </button>
             
-            <button 
-              className="btn btn-ghost btn-sm w-full justify-start gap-2"
-              onClick={toggleTheme}
-              aria-label={`تغییر به حالت ${theme === 'light' ? 'تاریک' : 'روشن'}`}
-            >
-              {theme === 'light' ? (
-                <>
-                  <Moon size={18} />
-                  <span>حالت تاریک</span>
-                </>
-              ) : (
-                <>
-                  <Sun size={18} />
-                  <span>حالت روشن</span>
-                </>
-              )}
-            </button>
+            <div className="mt-2"> {/* Wrapper for ThemeSwitcher in mobile menu */}
+              <ThemeSwitcher />
+            </div>
           </nav>
         </div>
       )}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, MouseEvent } from 'react'; // Added useRef, MouseEvent
 import { fetchContent } from '../utils/api';
-import { Image as ImageIconLucide, Maximize, Download } from 'lucide-react'; // Renamed ImageIcon to avoid conflict
+import { Maximize, Download } from 'lucide-react'; // Removed ImageIconLucide
 
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -99,6 +99,15 @@ const ImageGallery: React.FC = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Refs and state for drag scrolling
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftStart, setScrollLeftStart] = useState(0);
+  const [enableAnimation, setEnableAnimation] = useState(false);
+  const dragOccurred = useRef(false); // Ref to track if a drag actually happened
+
+
   useEffect(() => {
     const loadGalleryData = async () => {
       try {
@@ -134,7 +143,56 @@ const ImageGallery: React.FC = () => {
     loadGalleryData();
   }, []);
 
+  useEffect(() => {
+    if (trackRef.current && galleryImages.length > 0 && !isLoading) {
+        const trackWidth = trackRef.current.scrollWidth;
+        const containerWidth = trackRef.current.offsetWidth;
+        setEnableAnimation(trackWidth > containerWidth && galleryImages.length > 3);
+    } else {
+        setEnableAnimation(false);
+    }
+  }, [galleryImages, isLoading]);
+
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (!trackRef.current) return;
+    e.preventDefault();
+    dragOccurred.current = false; // Reset drag flag
+    if (enableAnimation && trackRef.current.style.animationPlayState !== 'paused') {
+      trackRef.current.style.animationPlayState = 'paused';
+    }
+    setIsDragging(true);
+    setStartX(e.pageX - trackRef.current.offsetLeft);
+    setScrollLeftStart(trackRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !trackRef.current) return;
+    e.preventDefault();
+    dragOccurred.current = true; // Set drag flag
+    const x = e.pageX - trackRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // scroll-fast factor
+    trackRef.current.scrollLeft = scrollLeftStart - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      // Optionally resume animation if it was enabled - for now, keep it paused on user interaction
+      // if (enableAnimation && trackRef.current) {
+      //   trackRef.current.style.animationPlayState = 'running';
+      // }
+    }
+    // setTimeout to reset dragOccurred after click event could fire
+    setTimeout(() => {
+        dragOccurred.current = false;
+    }, 0);
+  };
+  
   const openLightboxAtIndex = (index: number) => {
+    if (dragOccurred.current) { // If a drag happened, don't open lightbox
+      dragOccurred.current = false; // Reset for next interaction
+      return;
+    }
     setCurrentImageIndex(index);
     setLightboxOpen(true);
   };
@@ -174,7 +232,8 @@ const ImageGallery: React.FC = () => {
     return (
       <section id="gallery" className="py-16 md:py-24 bg-base-200">
         <div className="container mx-auto px-4 text-center">
-          <ImageIconLucide size={48} className="mx-auto text-base-content/30 mb-4" />
+          {/* ImageIconLucide for empty state is fine if we keep the import, otherwise change to a generic one or text */}
+          <Maximize size={48} className="mx-auto text-base-content/30 mb-4" /> 
           <p className="text-xl text-base-content/70">گالری تصاویر در حال حاضر خالی است.</p>
         </div>
       </section>
@@ -185,35 +244,50 @@ const ImageGallery: React.FC = () => {
     <section id="gallery" className="py-16 md:py-24 bg-base-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16 text-primary">
-          <ImageIconLucide className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
+          {/* ImageIconLucide removed from title */}
           گالری تصاویر رویدادها
         </h2>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-          {galleryImages.map((image, index) => (
-            <div 
-              key={image.id} 
-              className="aspect-square relative overflow-hidden rounded-lg group cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300"
-              onClick={() => openLightboxAtIndex(index)}
-            >
-              <img 
-                src={image.thumbnailSrc} 
-                alt={image.alt || image.title || `Gallery image ${index + 1}`}
-                loading="lazy" // Lazy loading for thumbnails
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x300?text=Image+Not+Found'; // More visible placeholder
-                  (e.target as HTMLImageElement).classList.add('opacity-50');
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                {image.title && <p className="text-white text-xs sm:text-sm font-semibold line-clamp-2">{image.title}</p>}
-              </div>
-               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-2 bg-primary/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100">
-                  <Maximize size={16} className="text-primary-content" />
+        <div className="gallery-container w-full overflow-hidden relative py-4">
+           <div
+            ref={trackRef}
+            className={`gallery-track flex items-center ${enableAnimation ? 'animate-scroll-gallery-rtl' : ''} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            style={{ 
+                userSelect: isDragging ? 'none' : 'auto',
+                // animationPlayState will be controlled via JS on interaction
+            }}
+          >
+            {(enableAnimation ? [...galleryImages, ...galleryImages] : galleryImages).map((image, index) => (
+              <div 
+                key={image.id ? `${image.id}-${index}` : index} 
+                className="gallery-image-wrapper flex-shrink-0 px-2 cursor-pointer group relative" // Added group and relative for overlay elements
+                onClick={() => openLightboxAtIndex(index)} 
+              >
+                <img
+                  src={image.thumbnailSrc}
+                  alt={image.alt || image.title || `Gallery image ${index + 1}`}
+                  loading="lazy"
+                  className="h-40 sm:h-48 md:h-56 object-contain rounded-lg shadow-md transition-transform duration-300 group-hover:scale-105" // Group hover effect
+                  draggable="false"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x300?text=Image+Not+Found';
+                    (e.target as HTMLImageElement).classList.add('opacity-50');
+                  }}
+                />
+                {/* Overlay elements from original design can be re-added here if needed */}
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 sm:p-3">
+                  {image.title && <p className="text-white text-xs sm:text-sm font-semibold line-clamp-1 sm:line-clamp-2">{image.title}</p>}
                 </div>
-            </div>
-          ))}
+                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-2 bg-primary/70 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100">
+                    <Maximize size={16} className="text-primary-content" />
+                  </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       

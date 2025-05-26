@@ -240,4 +240,28 @@ section {
   object-fit: contain;
   display: inline-block; /* Ensure image behaves correctly */
   max-width: none; /* Override any potential max-width that might shrink it */
+  pointer-events: none; /* Prevents images from capturing mouse events like drag start */
+}
+
+/* Cursor styles for drag scrolling */
+.cursor-grab { cursor: grab; }
+.cursor-grabbing { cursor: grabbing; }
+
+/* Image Gallery scroll animation (Right-to-Left) */
+@keyframes scroll-gallery-rtl {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } /* Assumes doubled content */
+}
+
+.animate-scroll-gallery-rtl {
+  animation: scroll-gallery-rtl 60s linear infinite; /* Adjust duration as needed, e.g., 60s for more items */
+  will-change: transform;
+}
+
+.animate-scroll-gallery-rtl:hover {
+  animation-play-state: paused;
+}
+
+.gallery-track img { /* This rule might exist from Sponsors, ensure pointer-events is here */
+  pointer-events: none; /* Prevents images from capturing mouse events like drag start */
 }

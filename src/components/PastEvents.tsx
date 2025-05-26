@@ -314,34 +314,49 @@ const PastEvents: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-base-content/10">
-                    {event.resources?.youtube ? (
-                      <a 
-                        href={event.resources.youtube} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="btn btn-primary btn-sm gap-2"
-                      >
-                        <Video size={16}/> مشاهده ویدیو
-                      </a>
-                    ) : event.resources?.other?.[0]?.url ? (
-                      <a 
-                        href={event.resources.other[0].url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="btn btn-primary btn-sm gap-2"
-                      >
-                        <ExternalLink size={16}/> مشاهده صفحه
-                      </a>
-                    ) : ( <div className="flex-1"></div> ) /* Placeholder */}
-                    <button 
-                      className="btn btn-ghost btn-sm text-base-content/70 hover:bg-base-300"
-                      onClick={() => handleShareClick(event)}
-                      aria-label="اشتراک‌گذاری"
-                    >
-                      <Share2 size={18} />
-                    </button>
-                  </div>
+                  {(() => { // IIFE to define variables for the view button
+                    let viewUrl: string | undefined = undefined;
+                    let viewText: string = "مشاهده"; 
+                    let ViewIcon: React.ElementType = ExternalLink; // Default icon
+
+                    if (event.resources?.youtube) {
+                      viewUrl = event.resources.youtube;
+                      viewText = "مشاهده ویدیو";
+                      ViewIcon = Video;
+                    } else if ((event as any).youtubeLink) { // Check for direct youtubeLink (from current JSON)
+                      viewUrl = (event as any).youtubeLink;
+                      viewText = "مشاهده ویدیو";
+                      ViewIcon = Video;
+                    } else if (event.resources?.other?.[0]?.url) {
+                      viewUrl = event.resources.other[0].url;
+                      // Use the label from the 'other' resource if available, otherwise default to "مشاهده صفحه"
+                      viewText = event.resources.other[0].label || "مشاهده صفحه"; 
+                      ViewIcon = ExternalLink;
+                    }
+
+                    return (
+                      <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-base-content/10">
+                        {viewUrl ? (
+                          <a 
+                            href={viewUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="btn btn-primary btn-sm gap-2"
+                          >
+                            <ViewIcon size={16}/> {viewText}
+                          </a>
+                        ) : ( <div className="flex-1"></div> ) /* Placeholder to keep share button to the right */}
+                        
+                        <button 
+                          className="btn btn-ghost btn-sm text-base-content/70 hover:bg-base-300"
+                          onClick={() => handleShareClick(event)}
+                          aria-label="اشتراک‌گذاری"
+                        >
+                          <Share2 size={18} />
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             ))}
