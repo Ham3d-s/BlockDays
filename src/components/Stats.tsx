@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { fetchContent } from '../utils/api'; // Import fetchContent
-// Recharts imports are no longer needed
-import { Users, Users2, BarChart3, Clock, Award, HelpCircle } from 'lucide-react'; // Removed TrendingUp, PieChart as PieIcon
+import { fetchContent } from '../utils/api';
+import { 
+    Users, Users2, BarChart3, Clock, Award, HelpCircle, 
+    CalendarDays, CalendarClock, UsersRound, Briefcase // Added new icons
+} from 'lucide-react';
 
 // Interface for data from stats.json
 interface JsonStatItem {
@@ -39,23 +41,43 @@ const Stats: React.FC = () => {
 
   // Helper function to map icon string to ReactNode
   const mapIconStringToNode = (iconString?: string): React.ReactNode => {
-    const iconProps = { className: "w-10 h-10" };
+    const iconProps = { className: "w-10 h-10" }; // Default props for icons
     switch (iconString?.toLowerCase()) {
+      // Mappings for original initialStatsData (if still relevant or as fallback)
       case 'award':
-      case 'events': // Added alias based on initialStatsData id
         return <Award {...iconProps} />;
-      case 'users':
-      case 'participants': // Added alias
-        return <Users {...iconProps} />;
-      case 'users2':
-      case 'speakers': // Added alias
+      // case 'users': // 'users' from initialStatsData might conflict with 'people' from JSON if not handled carefully
+      //   return <Users {...iconProps} />; 
+      case 'users2': // For "سخنران متخصص" if using initial data
         return <Users2 {...iconProps} />;
       case 'clock':
-      case 'hours': // Added alias
         return <Clock {...iconProps} />;
+      
+      // Mappings for stats.json values
+      case 'event': // From stats.json "icon": "event"
+        return <CalendarDays {...iconProps} />;
+      case 'calendar_today': // From stats.json "icon": "calendar_today"
+        return <CalendarClock {...iconProps} />;
+      case 'people': // From stats.json "icon": "people"
+        return <Users {...iconProps} />; // Re-using Users icon
+      case 'groups': // From stats.json "icon": "groups"
+        return <UsersRound {...iconProps} />;
+      case 'business': // From stats.json "icon": "business"
+        return <Briefcase {...iconProps} />;
+
+      // Aliases from previous implementation (if any item in JSON might use these)
+      case 'events': 
+        return <Award {...iconProps} />; // Or CalendarDays if more appropriate
+      case 'participants': 
+        return <Users {...iconProps} />; // Or UsersRound
+      case 'speakers': 
+        return <Users2 {...iconProps} />;
+      case 'hours': 
+        return <Clock {...iconProps} />;
+        
       default:
-        console.warn(`Unknown icon string: ${iconString}, using default.`);
-        return <HelpCircle {...iconProps} />; // Default icon
+        console.warn(`Unknown icon string: ${iconString}, using default HelpCircle.`);
+        return <HelpCircle {...iconProps} />; // Default fallback icon
     }
   };
 

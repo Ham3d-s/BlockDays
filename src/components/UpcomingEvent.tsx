@@ -192,50 +192,79 @@ const UpcomingEvent: React.FC = () => {
     const loadEvents = async () => {
       try {
         setIsLoading(true);
-        let fetchedEvents: UpcomingEvent[];
+        let finalEventsToShow: UpcomingEvent[] = [];
+
         if (DEMO_MODE) {
-          fetchedEvents = DEFAULT_EVENTS.map(event => ({
-            ...event,
-            active: event.active !== undefined ? event.active : true,
-            image: event.image || `/images/events/default-${event.type || 'event'}.jpg` // Provide default image based on type
-          }));
+          // In DEMO_MODE, use only active DEFAULT_EVENTS, limited to 3
+          finalEventsToShow = DEFAULT_EVENTS
+            .filter(event => event.active !== undefined ? event.active : true)
+            .map(event => ({
+              ...event,
+              image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+            }))
+            .slice(0, 3);
         } else {
-          const data = await fetchContent<UpcomingEvent[] | UpcomingEvent>('upcoming-event.json');
-          let arrData = Array.isArray(data) ? data : [data];
-          fetchedEvents = arrData.filter(ev => ev && ev.id && ev.title && ev.date && ev.location && ev.type).map(event => ({
-            ...event,
-            active: event.active !== undefined ? event.active : true,
-            image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-          }));
+          // Fetch live events
+          const liveEventsData = await fetchContent<UpcomingEvent[] | UpcomingEvent>('upcoming-event.json');
+          let arrLiveEventsData = Array.isArray(liveEventsData) ? liveEventsData : [liveEventsData];
+          
+          const activeLiveEvents = arrLiveEventsData
+            .filter(ev => ev && ev.id && ev.title && ev.date && ev.location && ev.type) // Basic validation
+            .filter(ev => ev.active !== undefined ? ev.active : true)
+            .map(event => ({
+              ...event,
+              image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+            }));
+
+          if (activeLiveEvents.length === 0) {
+            console.warn("No active events found in upcoming-event.json. Will attempt to use default upcoming events.");
+          }
+
+          finalEventsToShow = [...activeLiveEvents];
+
+          // Supplement with active default events if needed, ensuring uniqueness
+          if (finalEventsToShow.length < 3) {
+            const activeDefaultEvents = DEFAULT_EVENTS
+              .filter(event => event.active !== undefined ? event.active : true)
+              .map(event => ({
+                ...event,
+                image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+              }));
+
+            for (const defaultEvent of activeDefaultEvents) {
+              if (finalEventsToShow.length >= 3) break;
+              // Add if ID is not already in finalEventsToShow
+              if (!finalEventsToShow.some(e => e.id === defaultEvent.id)) {
+                finalEventsToShow.push(defaultEvent);
+              }
+            }
+          }
+          
+          // Ensure we don't exceed 3 events even after supplementation (e.g. if activeLiveEvents had 2, we add 1 default)
+          finalEventsToShow = finalEventsToShow.slice(0, 3);
+
+          // If after all this, finalEventsToShow is empty (e.g., JSON is empty/all inactive, AND DEFAULT_EVENTS are all inactive)
+          // it will naturally show the "no events" message, which is fine.
+          // The original fallback for completely empty live data was:
+          // if (activeEvents.length === 0 && !DEMO_MODE) { /* fallback to default */ }
+          // This new logic directly incorporates defaults if live data is insufficient.
         }
         
-        let activeEvents = fetchedEvents.filter(ev => ev.active);
-
-        if (activeEvents.length === 0 && !DEMO_MODE) {
-            console.warn("No active upcoming events found in upcoming-event.json.");
-            // No fallback to demo events here for the section visibility logic,
-            // but DEMO_MODE itself will load defaults if true.
-            // The actual display of demo events if JSON is empty is handled by DEMO_MODE check or error fallback.
-        }
-        
-        // Apply the "display only three events" rule
-        const eventsToSet = (activeEvents.length > 0 || DEMO_MODE) 
-          ? (DEMO_MODE && activeEvents.length === 0 ? DEFAULT_EVENTS : activeEvents).slice(0, 3)
-          : [];
-
-        setAllEvents(eventsToSet);
+        setAllEvents(finalEventsToShow);
 
       } catch (err) {
-        console.error("Error loading events, falling back to default events (if any apply):", err);
-        setError('خطا در بارگذاری رویدادهای آینده. لطفاً بعداً دوباره تلاش کنید.');
-        // Fallback to demo events if DEMO_MODE is true or if an error occurs and we want to show something
-        // Apply slice(0,3) to demo events fallback as well
-        const errorFallbackEvents = DEFAULT_EVENTS.map(event => ({
+        console.error("Error loading events, falling back to default events for supplementation:", err);
+        setError('خطا در بارگذاری رویدادهای آینده. نمایش رویدادهای پیش‌فرض در صورت امکان.');
+        
+        // Fallback strategy on error: use up to 3 active default events
+        const activeDefaultEventsOnError = DEFAULT_EVENTS
+          .filter(event => event.active !== undefined ? event.active : true)
+          .map(event => ({
             ...event,
-            active: event.active !== undefined ? event.active : true,
             image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-        })).filter(ev => ev.active).slice(0, 3);
-        setAllEvents(errorFallbackEvents);
+          }))
+          .slice(0, 3);
+        setAllEvents(activeDefaultEventsOnError);
       } finally {
         setIsLoading(false);
       }
