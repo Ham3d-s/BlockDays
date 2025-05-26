@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchContent } from '../utils/api';
-import { HelpCircle, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp } from 'lucide-react'; // Removed HelpCircle
 
 interface FAQItem {
   id: string;
@@ -137,7 +137,6 @@ const FAQ: React.FC = () => {
     <section id="faq" className="py-16 md:py-24 bg-base-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 md:mb-12 text-primary">
-          <HelpCircle className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
           سوالات متداول
         </h2>
 
@@ -171,9 +170,14 @@ const FAQ: React.FC = () => {
                 <div className="collapse-title text-base md:text-lg font-medium text-base-content peer-checked:text-primary flex items-center justify-between cursor-pointer py-3 sm:py-4">
                   {item.question}
                 </div>
-                {/* Added transition classes for opacity */}
-                <div className="collapse-content text-base-content/80 bg-base-100/30 !pb-0 transition-opacity duration-300 ease-in-out opacity-0 peer-checked:opacity-100">
-                   <p className="pt-2 pb-4 text-sm md:text-base leading-relaxed">{item.answer}</p>
+                <div className="collapse-content text-base-content/80 bg-base-100/30 
+                      overflow-hidden 
+                      transition-all duration-500 ease-in-out 
+                      max-h-0 opacity-0 
+                      peer-checked:max-h-[1000px] 
+                      peer-checked:opacity-100 
+                      peer-checked:py-4">
+                   <p className="text-sm md:text-base leading-relaxed">{item.answer}</p>
                 </div>
               </div>
             ))}

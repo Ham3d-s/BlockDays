@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchContent } from '../utils/api';
-import { Share2, Calendar, Video, Users, MapPin, Search, ListChecks, Tv, Link as LinkIcon, Image as ImageIcon, ChevronLeft, ChevronRight, X, Clock } from 'lucide-react';
+import { Share2, Calendar, Video, Users, MapPin, Search, ListChecks, Tv, Link as LinkIcon, Image as ImageIcon, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'; // Removed Clock, Added ExternalLink
 
 // Updated Event Interface
 interface PastEvent {
@@ -151,10 +151,10 @@ const PastEvents: React.FC = () => {
 
   const categoryIcons: Record<PastEvent['category'], React.ReactNode> = {
     meetup: <Users size={16} className="ml-1" />,
-    conference: <Users size={16} className="ml-1" />, // Corrected Users2 to Users
-    videocast: <Tv size={16} className="ml-1" />,    // Changed icon for videocast
+    conference: <Users size={16} className="ml-1" />,
+    videocast: <Tv size={16} className="ml-1" />,
     workshop: <ListChecks size={16} className="ml-1" />,
-    webinar: <Clock size={16} className="ml-1" />, // Changed icon for webinar
+    webinar: <Users size={16} className="ml-1" />, // Changed Clock to Users or another relevant icon as Clock is removed
   };
 
   useEffect(() => {
@@ -266,7 +266,6 @@ const PastEvents: React.FC = () => {
     <section id="past-events" className="py-16 md:py-24 bg-base-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 md:mb-12 text-primary">
-          <Clock className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
           مروری بر رویدادهای گذشته
         </h2>
 
@@ -325,7 +324,16 @@ const PastEvents: React.FC = () => {
                       >
                         <Video size={16}/> مشاهده ویدیو
                       </a>
-                    ) : ( <div className="flex-1"></div> ) /* Placeholder to keep share button to the right */}
+                    ) : event.resources?.other?.[0]?.url ? (
+                      <a 
+                        href={event.resources.other[0].url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="btn btn-primary btn-sm gap-2"
+                      >
+                        <ExternalLink size={16}/> مشاهده صفحه
+                      </a>
+                    ) : ( <div className="flex-1"></div> ) /* Placeholder */}
                     <button 
                       className="btn btn-ghost btn-sm text-base-content/70 hover:bg-base-300"
                       onClick={() => handleShareClick(event)}
