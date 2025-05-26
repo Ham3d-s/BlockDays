@@ -188,3 +188,56 @@ html, body {
 section {
   @apply transition-colors duration-300;
 }
+
+/* Sponsor logo scroll animation */
+.logo-row-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  overflow: hidden; /* Added to ensure logos don't break out */
+  position: relative; /* Added for potential absolute positioning inside if needed */
+}
+
+.logo-track {
+  display: flex;
+  align-items: center; /* Vertically align logos */
+  white-space: nowrap; /* Prevent logos from wrapping */
+  will-change: transform; /* Performance hint for animation */
+}
+
+.animate-scroll-left {
+  animation: scroll-left 40s linear infinite; /* Increased duration for slower scroll */
+}
+
+.animate-scroll-right {
+  animation: scroll-right 40s linear infinite; /* Increased duration for slower scroll */
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } /* Assumes doubled content */
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); } /* Assumes doubled content */
+  100% { transform: translateX(0%); }
+}
+
+.logo-track:hover {
+  animation-play-state: paused; /* Pause animation on hover */
+}
+
+/* Individual logo styling within the track */
+.logo-track a { /* Targeting the link wrapper */
+  flex-shrink: 0; /* Prevent shrinking */
+  display: inline-block; /* Ensure proper layout */
+}
+
+.logo-track img {
+  height: 4rem; /* h-16 */
+  margin: 0 1.5rem; /* mx-6 */
+  object-fit: contain;
+  display: inline-block; /* Ensure image behaves correctly */
+  max-width: none; /* Override any potential max-width that might shrink it */
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchContent } from '../utils/api';
-import { Handshake, Building, Megaphone, Users, ExternalLink, Star } from 'lucide-react'; // Added Star for tiers
+import { Handshake } from 'lucide-react'; // Removed Building, Megaphone, Users, ExternalLink, Star
 
 // Updated Sponsor Interface
 interface SponsorEntry {
@@ -30,16 +30,20 @@ const DEMO_SPONSORS: SponsorEntry[] = [
   // Community
   { id: 'c1', name: 'انجمن بلاکچین ایران', logo: '/images/sponsors/community-logo-1.svg', tier: 'Community', description: 'حمایت از رشد و توسعه جامعه بلاکچین در ایران.', websiteUrl: 'https://example-community1.com' },
   { id: 'c2', name: 'گروه توسعه‌دهندگان اتریوم تهران', logo: '/images/sponsors/community-logo-2.svg', tier: 'Community', description: 'برگزاری میت‌آپ‌ها و کارگاه‌های آموزشی برای توسعه‌دهندگان.', websiteUrl: 'https://example-community2.com' },
+  // Adding more demo sponsors to reach at least 18 for the 3x6 grid if possible
+  { id: 'p3', name: 'پلتفرم معاملاتی نوین', logo: '/images/sponsors/platinum-logo-3.svg', tier: 'Platinum', description: 'ارائه دهنده پلتفرم پیشرفته برای معاملات رمزارز.', websiteUrl: 'https://example-platinum3.com' },
+  { id: 'g4', name: 'مرکز نوآوری بلاکچین', logo: '/images/sponsors/gold-logo-4.svg', tier: 'Gold', description: 'حمایت از استارتاپ های بلاکچینی.', websiteUrl: 'https://example-gold4.com' },
+  { id: 's5', name: 'خدمات احراز هویت دیجیتال', logo: '/images/sponsors/silver-logo-5.svg', tier: 'Silver', description: 'راهکارهای امن برای احراز هویت.', websiteUrl: 'https://example-silver5.com' },
+  { id: 'c3', name: 'جامعه برنامه‌نویسان پایتون', logo: '/images/sponsors/community-logo-3.svg', tier: 'Community', description: 'گردهمایی و اشتراک دانش بین برنامه‌نویسان.', websiteUrl: 'https://example-community3.com' },
+  { id: 'p4', name: 'شرکت داده‌پردازی ابری', logo: '/images/sponsors/platinum-logo-4.svg', tier: 'Platinum', description: 'زیرساخت ابری مطمئن برای پروژه‌های بزرگ.', websiteUrl: 'https://example-platinum4.com' },
+  { id: 'g5', name: 'مشاوران سرمایه‌گذاری دیجیتال', logo: '/images/sponsors/gold-logo-5.svg', tier: 'Gold', description: 'راهنمایی برای سرمایه‌گذاری هوشمند در رمزارزها.', websiteUrl: 'https://example-gold5.com' },
+  { id: 's6', name: 'توسعه‌دهنده اپلیکیشن‌های غیرمتمرکز', logo: '/images/sponsors/silver-logo-6.svg', tier: 'Silver', description: 'ساخت dApp های کاربردی و نوآورانه.', websiteUrl: 'https://example-silver6.com' },
+  { id: 'c4', name: 'کانون کارآفرینی فناوری', logo: '/images/sponsors/community-logo-4.svg', tier: 'Community', description: 'حمایت از کارآفرینان در حوزه فناوری.', websiteUrl: 'https://example-community4.com' },
+  { id: 's7', name: 'آژانس مارکتینگ وب ۳', logo: '/images/sponsors/silver-logo-7.svg', tier: 'Silver', description: 'خدمات تخصصی بازاریابی برای پروژه‌های وب ۳.', websiteUrl: 'https://example-silver7.com' },
+  { id: 's8', name: 'پلتفرم آموزشی آنلاین کریپتو', logo: '/images/sponsors/silver-logo-8.svg', tier: 'Silver', description: 'دوره‌های جامع آموزشی در زمینه ارزهای دیجیتال.', websiteUrl: 'https://example-silver8.com' },
 ];
 
-// Tier configuration
-const tierConfig = {
-  Platinum: { title: 'حامیان پلاتینیوم', icon: <Star size={28} className="text-yellow-400" />, gridCols: 'lg:grid-cols-2', cardClass: 'bg-base-300 shadow-2xl', logoSize: 'h-20 md:h-24', nameClass: 'text-xl md:text-2xl', descClass: 'text-base-content/80 text-sm md:text-base' },
-  Gold: { title: 'حامیان طلایی', icon: <Star size={24} className="text-yellow-500" />, gridCols: 'lg:grid-cols-3', cardClass: 'bg-base-200 shadow-xl', logoSize: 'h-16 md:h-20', nameClass: 'text-lg md:text-xl', descClass: 'text-base-content/70 text-sm' },
-  Silver: { title: 'حامیان نقره‌ای', icon: <Star size={20} className="text-gray-400" />, gridCols: 'md:grid-cols-3 lg:grid-cols-4', cardClass: 'bg-base-100 shadow-lg', logoSize: 'h-12 md:h-16', nameClass: 'text-md md:text-lg', descClass: 'text-xs' },
-  Community: { title: 'همکاران جامعه', icon: <Users size={20} className="text-blue-500" />, gridCols: 'md:grid-cols-4 lg:grid-cols-5', cardClass: 'bg-base-100 shadow-md', logoSize: 'h-10 md:h-12', nameClass: 'text-sm', descClass: 'text-xs' },
-};
-
+// Tier configuration and mapOldTypeToTier REMOVED
 
 const Sponsors: React.FC = () => {
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([]);
@@ -53,15 +57,15 @@ const Sponsors: React.FC = () => {
         if (DEMO_MODE) {
           setSponsors(DEMO_SPONSORS);
         } else {
-          // Assuming the fetched data structure needs mapping to SponsorEntry
-          const fetchedData = await fetchContent<any[]>('sponsors.json'); 
+          const fetchedData = await fetchContent<any[]>('sponsors.json');
+          // Tier mapping is removed, but structure is kept for now.
+          // Description and tier might not be directly used in the new design but are kept in data.
           const mappedData: SponsorEntry[] = fetchedData.map(item => ({
             id: item.id,
             name: item.name,
             logo: item.logo,
-            // Map 'type' from old structure to 'tier' in new, or define default
-            tier: mapOldTypeToTier(item.type) || 'Silver', 
-            description: item.description || 'حامی رویداد بلاک دیز', // Provide default description
+            tier: item.tier || 'Silver', // Default tier if not provided
+            description: item.description || 'حامی رویداد بلاک دیز',
             websiteUrl: item.website,
           }));
           setSponsors(mappedData);
@@ -69,25 +73,15 @@ const Sponsors: React.FC = () => {
       } catch (err) {
         console.error('Failed to load sponsors:', err);
         setError('خطا در بارگذاری اطلاعات حامیان. لطفاً بعداً دوباره تلاش کنید.');
-        if (DEMO_MODE) setSponsors(DEMO_SPONSORS); // Fallback for demo
+        if (DEMO_MODE) setSponsors(DEMO_SPONSORS);
       } finally {
         setIsLoading(false);
       }
     };
     loadSponsors();
   }, []);
-  
-  // Helper function to map old sponsor types to new tiers if not in DEMO_MODE
-  const mapOldTypeToTier = (type?: 'financial' | 'moral' | 'media'): SponsorEntry['tier'] | undefined => {
-    if (!type) return undefined;
-    switch (type) {
-      case 'financial': return 'Platinum';
-      case 'moral': return 'Gold';
-      case 'media': return 'Silver';
-      default: return 'Community';
-    }
-  };
 
+  // mapOldTypeToTier REMOVED
 
   if (isLoading) {
     return (
@@ -110,7 +104,7 @@ const Sponsors: React.FC = () => {
     );
   }
   
-  if (sponsors.length === 0) {
+  if (sponsors.length === 0 && !isLoading) { // Ensure not to show "no sponsors" while loading
      return (
       <section id="sponsors" className="py-16 md:py-24 bg-base-200">
         <div className="container mx-auto px-4 text-center">
@@ -121,52 +115,64 @@ const Sponsors: React.FC = () => {
     );
   }
 
-  const renderSponsorTier = (tier: SponsorEntry['tier']) => {
-    const tierSponsors = sponsors.filter(s => s.tier === tier);
-    if (tierSponsors.length === 0) return null;
+  // Logic for new logo display
+  const displaySponsors = sponsors.slice(0, 18); // Take up to 18 sponsors
+  const rowSize = 6;
+  const rows: SponsorEntry[][] = [];
+  for (let i = 0; i < displaySponsors.length; i += rowSize) {
+    rows.push(displaySponsors.slice(i, i + rowSize));
+  }
+  // Ensure there are up to 3 rows for the structure, even if some are empty or partially filled.
+  // The rendering will handle empty or partially filled rows gracefully.
 
-    const config = tierConfig[tier];
-
-    return (
-      <div key={tier} className="mb-12 md:mb-16">
-        <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center flex items-center justify-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-          {config.icon}
-          {config.title}
-        </h3>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 ${config.gridCols}`}>
-          {tierSponsors.map(sponsor => (
-            <a
-              key={sponsor.id}
-              href={sponsor.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={sponsor.name} // Add title attribute for tooltip on hover
-              className="flex items-center justify-center p-4 bg-base-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300" // Basic container for the logo
-            >
-              <img
-                src={sponsor.logo}
-                alt={sponsor.name}
-                loading="lazy"
-                className={`max-w-full max-h-full object-contain ${config.logoSize}`} // Use logoSize from tierConfig for height
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo+Error'; }} // Basic error placeholder
-              />
-            </a>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  // renderSponsorTier REMOVED
 
   return (
     <section id="sponsors" className="py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16 text-primary">
-          <Handshake className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
+          {/* Handshake icon removed from title */}
           با حامیان ما آشنا شوید
         </h2>
         
-        {(Object.keys(tierConfig) as Array<SponsorEntry['tier']>).map(tier => renderSponsorTier(tier))}
-        
+        {/* New animated logo display */}
+        {sponsors.length > 0 && ( // Only render if there are sponsors
+          <div className="space-y-2 md:space-y-4"> {/* Container for the three rows */}
+            {rows.map((rowSponsors, rowIndex) => {
+              if (rowSponsors.length === 0) return null; // Don't render empty rows
+              return (
+                <div key={rowIndex} className="logo-row-container">
+                  <div 
+                    className={`logo-track ${
+                      rowIndex === 1 ? 'animate-scroll-right' : 'animate-scroll-left'
+                    }`}
+                  >
+                    {/* Render logos twice for seamless scroll */}
+                    {[...rowSponsors, ...rowSponsors].map((sponsor, index) => (
+                      <a 
+                        key={`${sponsor.id}-${index}-${rowIndex}`} // Ensure unique key across all logos
+                        href={sponsor.websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={sponsor.name}
+                        className="flex-shrink-0" // Prevents shrinking, part of logo-track a styling
+                      >
+                        <img
+                          src={sponsor.logo}
+                          alt={sponsor.name}
+                          loading="lazy"
+                          className="h-16 mx-6 object-contain" // Tailwind classes for individual logo styling
+                          onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo'; }}
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {/* Fallback for empty state is handled above by checking sponsors.length === 0 */}
       </div>
     </section>
   );

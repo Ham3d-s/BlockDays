@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchContent } from '../utils/api';
-import { Calendar, MapPin, Tag, ListFilter, ArrowUpDown } from 'lucide-react';
+import { Calendar, MapPin, Share2, Link as LinkIcon, X } from 'lucide-react'; // Added Share2, LinkIcon, X, removed Tag, ListFilter, ArrowUpDown
 
 // Extended Event Interface
 interface UpcomingEvent {
@@ -23,6 +23,59 @@ interface UpcomingEvent {
 
 // Demo mode toggle (set to true to always show demo events)
 const DEMO_MODE = false; // Set to true for demo/testing with new features
+
+// Share functionality (adapted from PastEvents.tsx)
+const SHARE_SLOGAN = 'بلاک‌دِیز، ویترین حوزه تکنولوژی ایران';
+
+interface UpcomingEventShare extends UpcomingEvent {} // Type alias for clarity in share functions
+
+const getShareText = (event: UpcomingEventShare) => {
+  let text = event.title;
+  if (event.description) {
+    text += `\n\n${event.description.substring(0, 100)}...`;
+  }
+  text += `\n\n${SHARE_SLOGAN}`;
+  return text;
+};
+
+const getShareUrl = (event: UpcomingEventShare) => {
+  // Prioritize details link, then register link, then a fallback to current page
+  return event.detailsLink || event.registerLink || window.location.href;
+};
+
+interface ShareOption {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  getUrl: ((event: UpcomingEventShare) => string) | null;
+  description: string;
+}
+
+const shareOptions: ShareOption[] = [
+  {
+    id: 'telegram', label: 'تلگرام',
+    icon: <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram" className="w-5 h-5" style={{ filter: 'invert(38%) sepia(77%) saturate(2160%) hue-rotate(184deg) brightness(96%) contrast(94%)' }} />,
+    getUrl: (event: UpcomingEventShare) => `https://t.me/share/url?url=${encodeURIComponent(getShareUrl(event))}&text=${encodeURIComponent(getShareText(event))}`,
+    description: 'اشتراک‌گذاری در تلگرام',
+  },
+  {
+    id: 'twitter', label: 'توییتر',
+    icon: <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X (Twitter)" className="w-5 h-5" style={{ filter: 'invert(100%)' }} />,
+    getUrl: (event: UpcomingEventShare) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(getShareText(event))}&url=${encodeURIComponent(getShareUrl(event))}`,
+    description: 'اشتراک‌گذاری در توییتر',
+  },
+  {
+    id: 'linkedin', label: 'لینکدین',
+    icon: <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn" className="w-5 h-5" style={{ filter: 'invert(34%) sepia(97%) saturate(1263%) hue-rotate(189deg) brightness(93%) contrast(91%)' }} />,
+    getUrl: (event: UpcomingEventShare) => `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(getShareUrl(event))}&title=${encodeURIComponent(event.title)}&summary=${encodeURIComponent(getShareText(event))}`,
+    description: 'اشتراک‌گذاری در لینکدین',
+  },
+  {
+    id: 'copy', label: 'کپی لینک',
+    icon: <LinkIcon size={20} className="text-base-content" />,
+    getUrl: null, description: 'کپی کردن لینک رویداد',
+  },
+];
 
 const DEFAULT_EVENTS: UpcomingEvent[] = [
   {
@@ -92,11 +145,7 @@ const DEFAULT_EVENTS: UpcomingEvent[] = [
   }
 ];
 
-const EVENT_TYPES = ['all', 'conference', 'workshop', 'meetup', 'webinar'];
-const SORT_OPTIONS = {
-  date_desc: 'جدیدترین‌ها',
-  date_asc: 'قدیمی‌ترین‌ها',
-};
+// Removed EVENT_TYPES and SORT_OPTIONS
 
 interface Countdown {
   days: number;
@@ -132,8 +181,12 @@ const UpcomingEvent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [sortOrder, setSortOrder] = useState<string>('date_desc');
+  // Removed selectedType and sortOrder states
+
+  // Share Modal States
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedEventForShare, setSelectedEventForShare] = useState<UpcomingEventShare | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -158,25 +211,31 @@ const UpcomingEvent: React.FC = () => {
         
         let activeEvents = fetchedEvents.filter(ev => ev.active);
 
-        if (activeEvents.length === 0 && !DEMO_MODE) { 
-            console.warn("No active upcoming events found in upcoming-event.json. Falling back to default events.");
-            activeEvents = DEFAULT_EVENTS.map(event => ({
-                ...event,
-                active: event.active !== undefined ? event.active : true,
-                image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-            })).filter(ev => ev.active); 
+        if (activeEvents.length === 0 && !DEMO_MODE) {
+            console.warn("No active upcoming events found in upcoming-event.json.");
+            // No fallback to demo events here for the section visibility logic,
+            // but DEMO_MODE itself will load defaults if true.
+            // The actual display of demo events if JSON is empty is handled by DEMO_MODE check or error fallback.
         }
-        setAllEvents(activeEvents);
+        
+        // Apply the "display only three events" rule
+        const eventsToSet = (activeEvents.length > 0 || DEMO_MODE) 
+          ? (DEMO_MODE && activeEvents.length === 0 ? DEFAULT_EVENTS : activeEvents).slice(0, 3)
+          : [];
+
+        setAllEvents(eventsToSet);
 
       } catch (err) {
-        // If fetching/processing JSON fails, always fall back to default events
-        console.error("Error loading events, falling back to default events:", err);
+        console.error("Error loading events, falling back to default events (if any apply):", err);
         setError('خطا در بارگذاری رویدادهای آینده. لطفاً بعداً دوباره تلاش کنید.');
-        setAllEvents(DEFAULT_EVENTS.map(event => ({ // Re-map DEFAULT_EVENTS to ensure consistency if its structure differs or needs defaults applied
+        // Fallback to demo events if DEMO_MODE is true or if an error occurs and we want to show something
+        // Apply slice(0,3) to demo events fallback as well
+        const errorFallbackEvents = DEFAULT_EVENTS.map(event => ({
             ...event,
             active: event.active !== undefined ? event.active : true,
             image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-        })).filter(ev => ev.active));
+        })).filter(ev => ev.active).slice(0, 3);
+        setAllEvents(errorFallbackEvents);
       } finally {
         setIsLoading(false);
       }
@@ -202,25 +261,31 @@ const UpcomingEvent: React.FC = () => {
   }, [allEvents]);
 
   const processedEvents = useMemo(() => {
-    let eventsToProcess = [...allEvents];
+    // No more filtering or sorting here, just use allEvents (which is already sliced to 3)
+    return allEvents;
+  }, [allEvents]);
 
-    // Filtering
-    if (selectedType !== 'all') {
-      eventsToProcess = eventsToProcess.filter(event => event.type === selectedType);
-    }
+  // Share Modal Handlers
+  const handleShareClick = (event: UpcomingEventShare) => {
+    setSelectedEventForShare(event);
+    setShareModalOpen(true);
+    setCopySuccess(false); // Reset copy success message
+  };
 
-    // Sorting
-    eventsToProcess.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      if (sortOrder === 'date_asc') {
-        return dateA - dateB;
+  const handleShareAction = async (option: ShareOption, event: UpcomingEventShare) => {
+    if (option.id === 'copy') {
+      try {
+        await navigator.clipboard.writeText(getShareUrl(event));
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000); // Hide message after 2s
+      } catch (err) {
+        alert('کپی لینک ناموفق بود.');
       }
-      return dateB - dateA; // date_desc
-    });
-
-    return eventsToProcess;
-  }, [allEvents, selectedType, sortOrder]);
+    } else if (option.getUrl) {
+      window.open(option.getUrl(event), '_blank', 'noopener,noreferrer');
+    }
+    // Optionally close modal: setShareModalOpen(false);
+  };
 
 
   if (isLoading) {
@@ -234,86 +299,43 @@ const UpcomingEvent: React.FC = () => {
     );
   }
 
+  // Configurable Section Visibility: If no events and not in demo mode (and not loading), render nothing.
+  if (allEvents.length === 0 && !DEMO_MODE && !isLoading) {
+    return null;
+  }
+
   return (
     <section id="upcoming-event-section" className="py-16 md:py-24 bg-base-200">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-12 text-center text-primary">
-          <Calendar className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
+          {/* Calendar icon removed from title */}
           رویدادهای آینده
         </h2>
 
-        {/* Filters and Sorting Controls */}
-        <div className="mb-10 p-4 bg-base-100 rounded-lg shadow-md">
-          <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Filter by Type */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold"><ListFilter className="inline-block w-4 h-4 mr-1" />فیلتر بر اساس نوع</span>
-                </label>
-                <select 
-                  className="select select-bordered select-primary w-full sm:w-auto"
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                >
-                  {EVENT_TYPES.map(type => (
-                    <option key={type} value={type}>
-                      {type === 'all' ? 'همه رویدادها' : type.charAt(0).toUpperCase() + type.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort By */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold"><ArrowUpDown className="inline-block w-4 h-4 mr-1" />مرتب‌سازی بر اساس</span>
-                </label>
-                <select 
-                  className="select select-bordered select-primary w-full sm:w-auto"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                >
-                  {Object.entries(SORT_OPTIONS).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="text-sm text-base-content/70 mt-4 md:mt-0">
-              {processedEvents.length} رویداد یافت شد
-            </div>
-          </div>
-        </div>
+        {/* Filters and Sorting Controls REMOVED */}
         
         {error && (
           <div className="alert alert-error shadow-lg my-6">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <span>{error}</span>
+              <span>{error} {/* Displaying error if one occurs, even with demo data as fallback */}</span>
             </div>
           </div>
         )}
 
-        {processedEvents.length === 0 && !error && (
+        {processedEvents.length === 0 && !error && !isLoading && ( // Adjusted condition
           <div className="text-center py-10">
-            <Tag className="w-16 h-16 mx-auto text-base-content/30 mb-4" />
+            {/* Icon changed from Tag to Calendar for consistency, or remove if not desired */}
+            <Calendar className="w-16 h-16 mx-auto text-base-content/30 mb-4" /> 
             <p className="text-xl text-base-content/70">
-              در حال حاضر هیچ رویدادی با معیارهای انتخابی شما وجود ندارد.
+              در حال حاضر هیچ رویداد آینده‌ای برای نمایش وجود ندارد.
             </p>
-            {selectedType !== 'all' && (
-              <button 
-                className="btn btn-link mt-4"
-                onClick={() => setSelectedType('all')}
-              >
-                نمایش همه رویدادها
-              </button>
-            )}
+            {/* Removed button to show all events as filters are gone */}
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {processedEvents.map((event) => {
+          {processedEvents.map((event) => { // processedEvents is now already sliced to 3
             const timeLeft = countdowns[event.id] || { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
             const eventDateFormatted = new Date(event.date).toLocaleDateString('fa-IR', {
               year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -381,19 +403,26 @@ const UpcomingEvent: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="card-actions justify-center mt-auto pt-4 border-t border-base-content/10">
+                  <div className="card-actions justify-between items-center mt-auto pt-4 border-t border-base-content/10">
                     {!timeLeft.expired ? (
                       <>
                         <a href={event.registerLink} className="btn btn-primary btn-sm flex-grow" target="_blank" rel="noopener noreferrer">ثبت نام</a>
-                        <a href={event.detailsLink} className="btn btn-outline btn-secondary btn-sm flex-grow" target="_blank" rel="noopener noreferrer">جزئیات بیشتر</a>
+                        <a href={event.detailsLink} className="btn btn-outline btn-secondary btn-sm flex-grow" target="_blank" rel="noopener noreferrer">جزئیات</a>
                       </>
                     ) : (
-                      <div className="flex flex-wrap gap-2 justify-center">
+                      <div className="flex flex-wrap gap-2 justify-start flex-grow">
                         {event.youtubeLink && <a href={event.youtubeLink} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-100" target="_blank" rel="noopener noreferrer">یوتیوب</a>}
                         {event.aparatLink && <a href={event.aparatLink} className="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer">آپارات</a>}
-                        {event.infoLink && <a href={event.infoLink} className="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer">اطلاعات بیشتر</a>}
+                        {event.infoLink && <a href={event.infoLink} className="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer">اطلاعات</a>}
                       </div>
                     )}
+                     <button 
+                        className="btn btn-ghost btn-sm text-base-content/70 hover:bg-base-300 p-2" // Adjusted padding
+                        onClick={() => handleShareClick(event)}
+                        aria-label="اشتراک‌گذاری رویداد"
+                      >
+                        <Share2 size={18} />
+                      </button>
                   </div>
                 </div>
               </div>
@@ -401,6 +430,33 @@ const UpcomingEvent: React.FC = () => {
           })}
         </div>
       </div>
+      {/* Share Modal */}
+      {shareModalOpen && selectedEventForShare && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShareModalOpen(false)}>
+          <div className="bg-base-200 rounded-2xl shadow-xl p-6 sm:p-8 max-w-md w-full relative" onClick={e => e.stopPropagation()}>
+            <button className="btn btn-sm btn-circle btn-ghost absolute left-3 top-3 text-base-content/70" onClick={() => setShareModalOpen(false)}><X size={20} /></button>
+            <h3 className="text-lg sm:text-xl font-bold mb-6 text-primary text-center">اشتراک‌گذاری رویداد</h3>
+            <p className="text-sm text-base-content/80 mb-1 text-center line-clamp-1">"{selectedEventForShare.title}"</p>
+            <div className="divider my-3 text-xs">از طریق</div>
+            <ul className="space-y-3">
+              {shareOptions.map(option => (
+                <li key={option.id}>
+                  <button
+                    className="btn btn-block btn-outline hover:bg-primary hover:text-primary-content border-base-content/20 flex items-center gap-3 justify-start text-sm py-2 h-auto group" // Added group for potential future use
+                    onClick={() => handleShareAction(option, selectedEventForShare)}
+                    title={option.description}
+                  >
+                    {option.icon}
+                    <span className="flex-1 text-right text-base-content group-hover:text-primary-content">{option.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {copySuccess && <div className="text-success text-xs text-center mt-3">لینک با موفقیت کپی شد!</div>}
+            <div className="mt-6 text-xs text-base-content/50 text-center">{SHARE_SLOGAN}</div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
