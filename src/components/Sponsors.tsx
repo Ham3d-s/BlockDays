@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, MouseEvent } from 'react'; // Added useRef, MouseEvent
 import { fetchContent } from '../utils/api';
-import { Handshake } from 'lucide-react'; // Removed Building, Megaphone, Users, ExternalLink, Star
+import { Handshake } from 'lucide-react';
 
 // Updated Sponsor Interface
 interface SponsorEntry {
@@ -49,6 +49,44 @@ const Sponsors: React.FC = () => {
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Refs and state for drag scrolling
+  const trackRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  const [isDragging, setIsDragging] = useState<boolean[]>([false, false, false]);
+  const [startX, setStartX] = useState<number[]>([0, 0, 0]);
+  const [scrollLeftStart, setScrollLeftStart] = useState<number[]>([0, 0, 0]);
+
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>, index: number) => {
+    if (!trackRefs[index].current) return;
+    e.preventDefault(); // Prevent text selection and other default drag behaviors
+    trackRefs[index].current!.style.animationPlayState = 'paused';
+    setIsDragging(prev => { const newArr = [...prev]; newArr[index] = true; return newArr; });
+    setStartX(prev => { const newArr = [...prev]; newArr[index] = e.pageX - trackRefs[index].current!.offsetLeft; return newArr; });
+    setScrollLeftStart(prev => { const newArr = [...prev]; newArr[index] = trackRefs[index].current!.scrollLeft; return newArr; });
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>, index: number) => {
+    if (!isDragging[index] || !trackRefs[index].current) return;
+    e.preventDefault();
+    const x = e.pageX - trackRefs[index].current!.offsetLeft;
+    const walk = (x - startX[index]) * 1.5; // scroll-fast factor
+    trackRefs[index].current!.scrollLeft = scrollLeftStart[index] - walk;
+  };
+
+  const handleMouseUpOrLeave = (index: number) => {
+    // Check if it was actually dragging this specific track before resetting
+    if (!isDragging[index] || !trackRefs[index].current) return; 
+    
+    setIsDragging(prev => {
+      const newArr = [...prev];
+      newArr[index] = false;
+      return newArr;
+    });
+    // Optional: Decide if animation should resume. For now, it stays paused.
+    // if (trackRefs[index].current) {
+    //   trackRefs[index].current!.style.animationPlayState = 'running'; // Or keep paused
+    // }
+  };
 
   useEffect(() => {
     const loadSponsors = async () => {
@@ -142,26 +180,34 @@ const Sponsors: React.FC = () => {
               if (rowSponsors.length === 0) return null; // Don't render empty rows
               return (
                 <div key={rowIndex} className="logo-row-container">
-                  <div 
+                  <div
+                    ref={trackRefs[rowIndex]}
                     className={`logo-track ${
                       rowIndex === 1 ? 'animate-scroll-right' : 'animate-scroll-left'
-                    }`}
+                    } ${isDragging[rowIndex] ? 'cursor-grabbing' : 'cursor-grab'}`}
+                    onMouseDown={(e) => handleMouseDown(e, rowIndex)}
+                    onMouseMove={(e) => handleMouseMove(e, rowIndex)}
+                    onMouseUp={() => handleMouseUpOrLeave(rowIndex)}
+                    onMouseLeave={() => handleMouseUpOrLeave(rowIndex)}
+                    style={{ userSelect: isDragging[rowIndex] ? 'none' : 'auto' }}
                   >
                     {/* Render logos twice for seamless scroll */}
-                    {[...rowSponsors, ...rowSponsors].map((sponsor, index) => (
+                    {[...rowSponsors, ...rowSponsors].map((sponsor, imgIndex) => (
                       <a 
-                        key={`${sponsor.id}-${index}-${rowIndex}`} // Ensure unique key across all logos
+                        key={`${sponsor.id}-${imgIndex}-${rowIndex}`} // Unique key considering duplication and row
                         href={sponsor.websiteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         title={sponsor.name}
-                        className="flex-shrink-0" // Prevents shrinking, part of logo-track a styling
+                        className="flex-shrink-0"
+                        draggable="false" // Prevent native anchor drag
                       >
                         <img
                           src={sponsor.logo}
                           alt={sponsor.name}
                           loading="lazy"
-                          className="h-16 mx-6 object-contain" // Tailwind classes for individual logo styling
+                          className="h-16 mx-6 object-contain" // pointer-events: none; will be in CSS
+                          draggable="false" // Prevent native image drag
                           onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo'; }}
                         />
                       </a>

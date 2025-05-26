@@ -299,10 +299,8 @@ const UpcomingEvent: React.FC = () => {
     );
   }
 
-  // Configurable Section Visibility: If no events and not in demo mode (and not loading), render nothing.
-  if (allEvents.length === 0 && !DEMO_MODE && !isLoading) {
-    return null;
-  }
+  // Early return condition removed: The section will always render its main structure.
+  // The internal logic will handle displaying events or the "no events" message.
 
   return (
     <section id="upcoming-event-section" className="py-16 md:py-24 bg-base-200">
