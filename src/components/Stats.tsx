@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { fetchContent } from '../utils/api'; // Import fetchContent
-import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, Text } from 'recharts';
-import { Users, Users2, BarChart3, Clock, Award, TrendingUp, PieChart as PieIcon, HelpCircle } from 'lucide-react'; // Added HelpCircle for default
+// Recharts imports are no longer needed
+import { Users, Users2, BarChart3, Clock, Award, HelpCircle } from 'lucide-react'; // Removed TrendingUp, PieChart as PieIcon
 
 // Interface for data from stats.json
 interface JsonStatItem {
@@ -22,20 +22,7 @@ interface StatItem {
   suffix?: string; // e.g., "+" or "K"
 }
 
-// Sample data for charts
-const eventGrowthData = [
-  { year: '۱۳۹۹', participants: 500 },
-  { year: '۱۴۰۰', participants: 1200 },
-  { year: '۱۴۰۱', participants: 1800 },
-  { year: '۱۴۰۲', participants: 2500 },
-  { year: '۱۴۰۳', participants: 3200 }, // Projected
-];
-
-const eventTypeData = [
-  { name: 'همایش‌ها', value: 45, fill: 'hsl(var(--p))' }, // Using DaisyUI primary color
-  { name: 'کارگاه‌ها', value: 35, fill: 'hsl(var(--s))' }, // Using DaisyUI secondary color
-  { name: 'میت‌آپ‌ها', value: 20, fill: 'hsl(var(--a))' },   // Using DaisyUI accent color
-];
+// Removed eventGrowthData and eventTypeData constants
 
 const initialStatsData: StatItem[] = [
   { id: 'events', icon: <Award className="w-10 h-10" />, title: 'رویداد موفق', value: 60, context: 'تعداد کل رویدادهای موفق برگزار شده تا کنون', suffix: '+' },
@@ -158,38 +145,7 @@ const Stats: React.FC = () => {
     requestAnimationFrame(animate);
   };
 
-  // Custom Label for Pie Chart
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }: any) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    const percentage = (percent * 100).toFixed(0);
-
-    return (
-      <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" className="text-xs font-semibold">
-        {`${name} (${percentage}%)`}
-      </text>
-    );
-  };
-  
-  // Custom Tooltip for Recharts
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="p-3 bg-base-300 border border-base-content/20 rounded-lg shadow-lg">
-          <p className="label text-sm font-semibold">{`${label}`}</p>
-          {payload.map((pld: any, index: number) => (
-            <p key={index} style={{ color: pld.fill }} className="text-sm">
-              {`${pld.name}: ${pld.value.toLocaleString('fa-IR')}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
+  // Removed renderCustomizedLabel and CustomTooltip functions
 
   return (
     <section id="stats" ref={statsRef} className="py-16 md:py-24 bg-base-200">
@@ -200,7 +156,7 @@ const Stats: React.FC = () => {
         </h2>
 
         {/* Key Statistics Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12 md:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12 md:mb-16">
           {statsData.map((stat) => (
             <div 
               key={stat.id} 
@@ -223,54 +179,7 @@ const Stats: React.FC = () => {
           ))}
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Bar Chart - Event Growth */}
-          <div className="bg-base-100 p-4 sm:p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl md:text-2xl font-semibold mb-6 text-center text-base-content/90">
-              <TrendingUp className="inline-block w-6 h-6 mr-2 text-accent" />
-              روند رشد شرکت‌کنندگان
-            </h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={eventGrowthData} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
-                <XAxis dataKey="year" tick={{ fill: 'hsl(var(--bc) / 0.7)', fontSize: 12 }} />
-                <YAxis tickFormatter={(value) => value.toLocaleString('fa-IR')} tick={{ fill: 'hsl(var(--bc) / 0.7)', fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsla(var(--b1)/0.1)' }} />
-                <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '10px' }} payload={[{ value: 'تعداد شرکت‌کنندگان', type: 'square', color: 'hsl(var(--p))' }]}/>
-                <Bar dataKey="participants" name="شرکت‌کنندگان" fill="hsl(var(--p))" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Pie Chart - Event Types */}
-          <div className="bg-base-100 p-4 sm:p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl md:text-2xl font-semibold mb-6 text-center text-base-content/90">
-              <PieIcon className="inline-block w-6 h-6 mr-2 text-accent" />
-              توزیع انواع رویدادها
-            </h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <Pie
-                  data={eventTypeData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                  outerRadius="80%"
-                  dataKey="value"
-                  nameKey="name"
-                >
-                  {eventTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} className="focus:outline-none hover:opacity-80 transition-opacity"/>
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                {/* <Legend wrapperStyle={{ fontSize: '14px' }} /> */}
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {/* Charts Section Removed */}
       </div>
     </section>
   );

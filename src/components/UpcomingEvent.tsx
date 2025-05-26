@@ -155,11 +155,28 @@ const UpcomingEvent: React.FC = () => {
             image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
           }));
         }
-        setAllEvents(fetchedEvents.filter(ev => ev.active));
+        
+        let activeEvents = fetchedEvents.filter(ev => ev.active);
+
+        if (activeEvents.length === 0 && !DEMO_MODE) { 
+            console.warn("No active upcoming events found in upcoming-event.json. Falling back to default events.");
+            activeEvents = DEFAULT_EVENTS.map(event => ({
+                ...event,
+                active: event.active !== undefined ? event.active : true,
+                image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+            })).filter(ev => ev.active); 
+        }
+        setAllEvents(activeEvents);
+
       } catch (err) {
-        console.error("Error loading events:", err);
+        // If fetching/processing JSON fails, always fall back to default events
+        console.error("Error loading events, falling back to default events:", err);
         setError('خطا در بارگذاری رویدادهای آینده. لطفاً بعداً دوباره تلاش کنید.');
-        setAllEvents(DEMO_MODE ? DEFAULT_EVENTS.filter(ev => ev.active) : []); // Fallback to demo if error in non-demo
+        setAllEvents(DEFAULT_EVENTS.map(event => ({ // Re-map DEFAULT_EVENTS to ensure consistency if its structure differs or needs defaults applied
+            ...event,
+            active: event.active !== undefined ? event.active : true,
+            image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+        })).filter(ev => ev.active));
       } finally {
         setIsLoading(false);
       }
