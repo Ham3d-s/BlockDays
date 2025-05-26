@@ -37,17 +37,6 @@ const Footer: React.FC = () => {
     }
   };
 
-  // TODO: Implement actual pages/sections for these 'Important Links' or remove them permanently.
-  /*
-  const importantLinks = [
-    { href: '#about-us', label: 'درباره ما', icon: <Users size={16} className="ml-2" /> },
-    { href: '#privacy-policy', label: 'سیاست حفظ حریم خصوصی', icon: <Shield size={16} className="ml-2" /> },
-    { href: '#terms-of-service', label: 'شرایط خدمات', icon: <FileText size={16} className="ml-2" /> },
-    { href: '#contact-us', label: 'تماس با ما', icon: <Mail size={16} className="ml-2" /> },
-    // { href: '#careers', label: 'فرصت‌های شغلی', icon: <Briefcase size={16} className="ml-2" /> }, // Example of another link
-  ];
-  */
-
   const socialMediaLinks = [
     { href: 'https://twitter.com/BlockDaysIran', label: 'Twitter', icon: <Twitter size={20} />, name: 'توییتر' },
     { href: 'https://linkedin.com/company/BlockDays', label: 'LinkedIn', icon: <Linkedin size={20} />, name: 'لینکدین' },
@@ -58,7 +47,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-base-300 text-base-content pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 mb-10"> {/* Adjusted lg:grid-cols-3 */}
           {/* Column 1: Brand Info & Description */}
           <div className="space-y-4">
             <a href="/" className="text-3xl font-extrabold text-primary hover:text-primary-focus transition-colors">
@@ -69,21 +58,7 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
-          {/* Column 2: Important Links */}
-          <div className="md:col-start-auto"> {/* Adjusted for potential 3-col on md */}
-            <h3 className="text-lg font-semibold mb-4 text-secondary">لینک‌های مهم</h3>
-            {/*
-            <ul className="space-y-2">
-              {importantLinks.map(link => (
-                <li key={link.label}>
-                  <a href={link.href} className="text-sm hover:text-primary transition-colors flex items-center opacity-80 hover:opacity-100">
-                    {link.icon} {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            */}
-          </div>
+          {/* Column 2: Important Links - REMOVED */}
 
           {/* Column 3: Newsletter */}
           <div className="lg:col-span-2"> {/* Newsletter takes more space on large screens */}

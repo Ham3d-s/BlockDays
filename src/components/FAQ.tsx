@@ -68,7 +68,7 @@ const FAQ: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const [openItemId, setOpenItemId] = useState<string | null>(null); // Changed state for single accordion
 
   useEffect(() => {
     const loadFAQs = async () => {
@@ -96,7 +96,7 @@ const FAQ: React.FC = () => {
   }, []);
 
   const toggleItem = (id: string) => {
-    setOpenItems(prev => ({ ...prev, [id]: !prev[id] }));
+    setOpenItemId(prevOpenId => (prevOpenId === id ? null : id)); // Updated for single accordion
   };
 
   const filteredFaqItems = useMemo(() => { // Renamed from filteredFaqCategories
@@ -164,14 +164,15 @@ const FAQ: React.FC = () => {
               >
                 <input 
                   type="checkbox" 
-                  checked={openItems[item.id] || false} 
+                  checked={openItemId === item.id} // Updated checked prop
                   onChange={() => toggleItem(item.id)}
                   className="min-h-[auto] peer"
                 /> 
                 <div className="collapse-title text-base md:text-lg font-medium text-base-content peer-checked:text-primary flex items-center justify-between cursor-pointer py-3 sm:py-4">
                   {item.question}
                 </div>
-                <div className="collapse-content text-base-content/80 bg-base-100/30 !pb-0">
+                {/* Added transition classes for opacity */}
+                <div className="collapse-content text-base-content/80 bg-base-100/30 !pb-0 transition-opacity duration-300 ease-in-out opacity-0 peer-checked:opacity-100">
                    <p className="pt-2 pb-4 text-sm md:text-base leading-relaxed">{item.answer}</p>
                 </div>
               </div>

@@ -135,6 +135,7 @@ const PastEvents: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1); // Added for pagination
   
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedEventForShare, setSelectedEventForShare] = useState<PastEvent | null>(null);
@@ -200,6 +201,23 @@ const PastEvents: React.FC = () => {
     });
   }, [allPastEvents, searchTerm]);
 
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    if (searchTerm) {
+      setCurrentPage(1);
+    }
+  }, [searchTerm]);
+
+  const EVENTS_PER_PAGE = 6;
+
+  const { currentDisplayEvents, totalPages } = useMemo(() => {
+    const indexOfLastEvent = currentPage * EVENTS_PER_PAGE;
+    const indexOfFirstEvent = indexOfLastEvent - EVENTS_PER_PAGE;
+    const displayEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+    const pages = Math.ceil(filteredEvents.length / EVENTS_PER_PAGE);
+    return { currentDisplayEvents: displayEvents, totalPages: pages };
+  }, [filteredEvents, currentPage]);
+
   const handleShareClick = (event: PastEvent) => {
     setSelectedEventForShare(event);
     setShareModalOpen(true);
@@ -233,7 +251,7 @@ const PastEvents: React.FC = () => {
     );
   }
 
-  if (error && filteredEvents.length === 0 && !DEMO_MODE) { // Show error only if not in demo and no events
+  if (error && currentDisplayEvents.length === 0 && !DEMO_MODE) { // Check currentDisplayEvents for error display
     return (
       <section id="past-events" className="py-16 md:py-24 bg-base-100">
         <div className="container mx-auto px-4 text-center">
@@ -242,107 +260,7 @@ const PastEvents: React.FC = () => {
       </section>
     );
   }
-  
-  const TimelineCard: React.FC<{ event: PastEvent; index: number }> = ({ event, index }) => {
-    const isLeft = index % 2 === 0;
-    const formattedDate = event.date; // Assuming date is already in desired Farsi format for demo
-
-    // Placeholder image logic
-    const placeholderImage = 'https://via.placeholder.com/400x200?text=Event+Image+Not+Available';
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-      e.currentTarget.src = placeholderImage;
-      e.currentTarget.alt = 'تصویر جایگزین برای رویداد'; // Alt text for placeholder
-    };
-
-    return (
-      <div className={`flex md:contents`}>
-        {isLeft && <div className="col-start-5 col-end-6 md:mx-auto relative mr-10 md:mr-0">
-          <div className="h-full w-6 flex items-center justify-center">
-            <div className="h-full w-1 bg-primary pointer-events-none"></div>
-          </div>
-          <div className="w-6 h-6 absolute top-1/2 -mt-3 rounded-full bg-secondary shadow text-center flex items-center justify-center">
-            {categoryIcons[event.category] && React.cloneElement(categoryIcons[event.category] as React.ReactElement, { size: 14, className: "text-secondary-content" })}
-          </div>
-        </div>}
-        
-        <div className={`bg-base-200 col-start-6 col-end-10 p-4 sm:p-6 rounded-xl my-4 mr-auto shadow-md w-full md:w-auto ${isLeft ? 'md:ml-auto md:mr-0' : 'md:mr-auto'}`}>
-          {/* Image for the event - conceptual, as PastEvent doesn't have image in TimelineCard */}
-          {/* If an image were here, it would be:
-          <figure className="mb-4 h-40 rounded-md overflow-hidden bg-base-300">
-            <img 
-              src={event.image || placeholderImage} 
-              alt={event.title || 'تصویر رویداد'} 
-              loading="lazy"
-              className="w-full h-full object-cover"
-              onError={handleImageError}
-            />
-          </figure>
-          */}
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-semibold text-primary text-sm flex items-center">
-              {categoryIcons[event.category]}
-              {categoryTranslation[event.category]}
-            </span>
-            <span className="text-xs text-base-content/70 flex items-center">
-              <Calendar size={14} className="ml-1" /> {formattedDate}
-            </span>
-          </div>
-          <h3 className="font-semibold text-xl sm:text-2xl mb-1 text-base-content">{event.title}</h3>
-          {event.location && (
-            <p className="text-xs text-base-content/70 mb-2 flex items-center">
-              <MapPin size={12} className="ml-1" /> {event.location}
-            </p>
-          )}
-          <p className="text-sm leading-relaxed opacity-90 mb-3 line-clamp-3">{event.description}</p>
-          
-          {event.highlights && event.highlights.length > 0 && (
-            <div className="mb-3">
-              <h4 className="font-semibold text-sm mb-1 text-secondary">نکات کلیدی:</h4>
-              <ul className="list-disc list-inside text-sm space-y-1 opacity-80">
-                {event.highlights.map((hl, i) => <li key={i} className="line-clamp-2">{hl}</li>)}
-              </ul>
-            </div>
-          )}
-
-          {event.tags && event.tags.length > 0 && (
-             <div className="mb-4">
-                {event.tags.slice(0,4).map(tag => (
-                    <span key={tag} className="badge badge-outline badge-sm mr-1 mb-1">{tag}</span>
-                ))}
-            </div>
-          )}
-          
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex gap-2 flex-wrap">
-              {event.resources?.youtube && <a href={event.resources.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-error btn-outline btn-xs gap-1"><Video size={14}/> یوتیوب</a>}
-              {event.resources?.slides && <a href={event.resources.slides} target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-outline btn-xs gap-1"><ListChecks size={14}/> اسلایدها</a>}
-              {event.resources?.gallery && <a href={event.resources.gallery} target="_blank" rel="noopener noreferrer" className="btn btn-info btn-outline btn-xs gap-1"><ImageIcon size={14}/> گالری</a>}
-              {event.resources?.other?.map(link => (
-                 <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-xs gap-1"><LinkIcon size={14}/> {link.label}</a>
-              ))}
-            </div>
-            <button 
-              className="btn btn-circle btn-sm btn-ghost text-base-content/70 hover:bg-base-300"
-              onClick={() => handleShareClick(event)}
-              aria-label="اشتراک‌گذاری"
-            >
-              <Share2 size={16} />
-            </button>
-          </div>
-        </div>
-
-        {!isLeft && <div className="col-start-5 col-end-6 md:mx-auto relative ml-10 md:ml-0">
-          <div className="h-full w-6 flex items-center justify-center">
-            <div className="h-full w-1 bg-primary pointer-events-none"></div>
-          </div>
-          <div className="w-6 h-6 absolute top-1/2 -mt-3 rounded-full bg-secondary shadow text-center flex items-center justify-center">
-             {categoryIcons[event.category] && React.cloneElement(categoryIcons[event.category] as React.ReactElement, { size: 14, className: "text-secondary-content" })}
-          </div>
-        </div>}
-      </div>
-    );
-  };
-  
+  // Removed TimelineCard component
 
   return (
     <section id="past-events" className="py-16 md:py-24 bg-base-100">
@@ -366,27 +284,99 @@ const PastEvents: React.FC = () => {
           </div>
         </div>
         
-        {/* Timeline */}
-        {filteredEvents.length > 0 ? (
-          <div className="flex flex-col md:grid grid-cols-9 mx-auto p-2 text-blue-50">
-            {filteredEvents.map((event, index) => (
-              <TimelineCard key={event.id} event={event} index={index} />
+        {/* Grid for Event Cards */}
+        {currentDisplayEvents.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentDisplayEvents.map((event) => (
+              <div key={event.id} className="bg-base-200 rounded-xl shadow-md overflow-hidden flex flex-col">
+                <img 
+                  src={event.image || '/images/events/default-event.jpg'} 
+                  alt={event.title || 'تصویر رویداد'}
+                  loading="lazy"
+                  className="w-full h-48 object-cover"
+                  onError={(e) => { e.currentTarget.src = '/images/events/default-event.jpg'; }}
+                />
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="text-lg font-semibold mb-2 text-base-content">{event.title}</h3>
+                  <p className="text-xs text-base-content/70 mb-1">
+                    <Calendar size={14} className="inline-block ml-1" /> {event.date}
+                  </p>
+                  <p className="text-xs text-primary mb-2 flex items-center">
+                    {categoryIcons[event.category]}
+                    {categoryTranslation[event.category]}
+                  </p>
+                  <p className="text-sm text-base-content/80 mb-3 line-clamp-3 flex-grow">{event.description}</p>
+                  
+                  {event.tags && event.tags.length > 0 && (
+                     <div className="mb-3">
+                        {event.tags.slice(0,3).map(tag => ( // Show max 3 tags
+                            <span key={tag} className="badge badge-outline badge-secondary badge-sm mr-1 mb-1">{tag}</span>
+                        ))}
+                    </div>
+                  )}
+
+                  <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-base-content/10">
+                    {event.resources?.youtube ? (
+                      <a 
+                        href={event.resources.youtube} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="btn btn-primary btn-sm gap-2"
+                      >
+                        <Video size={16}/> مشاهده ویدیو
+                      </a>
+                    ) : ( <div className="flex-1"></div> ) /* Placeholder to keep share button to the right */}
+                    <button 
+                      className="btn btn-ghost btn-sm text-base-content/70 hover:bg-base-300"
+                      onClick={() => handleShareClick(event)}
+                      aria-label="اشتراک‌گذاری"
+                    >
+                      <Share2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-10">
             <Search size={48} className="mx-auto text-base-content/30 mb-4" />
             <p className="text-xl text-base-content/70">
-              هیچ رویدادی با عبارت جستجوی شما یافت نشد.
+              {searchTerm ? "هیچ رویدادی با عبارت جستجوی شما یافت نشد." : "رویدادی برای نمایش وجود ندارد."}
             </p>
             {searchTerm && (
                  <button className="btn btn-link mt-2" onClick={() => setSearchTerm('')}>پاک کردن جستجو</button>
             )}
           </div>
         )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-10 flex justify-center items-center space-x-2 rtl:space-x-reverse">
+            <button 
+              className="btn btn-outline btn-sm"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronRight size={18} /> {/* Icon for previous in RTL */}
+              قبلی
+            </button>
+            <span className="text-sm text-base-content/80 px-2">
+              صفحه {currentPage} از {totalPages}
+            </span>
+            <button 
+              className="btn btn-outline btn-sm"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              بعدی
+              <ChevronLeft size={18} /> {/* Icon for next in RTL */}
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Share Modal */}
+      {/* Share Modal (remains the same) */}
       {shareModalOpen && selectedEventForShare && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShareModalOpen(false)}>
           <div className="bg-base-200 rounded-2xl shadow-xl p-6 sm:p-8 max-w-md w-full relative" onClick={e => e.stopPropagation()}>

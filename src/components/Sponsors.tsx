@@ -135,31 +135,21 @@ const Sponsors: React.FC = () => {
         </h3>
         <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 ${config.gridCols}`}>
           {tierSponsors.map(sponsor => (
-            <a 
-              key={sponsor.id} 
+            <a
+              key={sponsor.id}
               href={sponsor.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`card ${config.cardClass} group transition-all duration-300 hover:scale-105 hover:shadow-primary/30`}
+              title={sponsor.name} // Add title attribute for tooltip on hover
+              className="flex items-center justify-center p-4 bg-base-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300" // Basic container for the logo
             >
-              <div className="card-body items-center text-center p-6">
-                <figure className={`mb-4 px-4 flex items-center justify-center ${config.logoSize} w-full`}>
-                  <img 
-                    src={sponsor.logo} 
-                    alt={sponsor.name}
-                    loading="lazy"
-                    className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-110"
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x80?text=Logo'; }}
-                  />
-                </figure>
-                <h4 className={`card-title ${config.nameClass} text-base-content`}>{sponsor.name}</h4>
-                <p className={`${config.descClass} text-base-content/70 line-clamp-3`}>{sponsor.description}</p>
-                <div className="card-actions mt-4">
-                  <button className="btn btn-xs btn-outline btn-primary group-hover:btn-primary group-hover:text-primary-content">
-                    مشاهده وبسایت <ExternalLink size={14} className="mr-1" />
-                  </button>
-                </div>
-              </div>
+              <img
+                src={sponsor.logo}
+                alt={sponsor.name}
+                loading="lazy"
+                className={`max-w-full max-h-full object-contain ${config.logoSize}`} // Use logoSize from tierConfig for height
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x60?text=Logo+Error'; }} // Basic error placeholder
+              />
             </a>
           ))}
         </div>

@@ -21,7 +21,7 @@ const Hero: React.FC = () => {
             className="btn btn-primary btn-lg group shadow-lg hover:shadow-xl transition-shadow duration-300"
             onClick={() => {
               // Assuming 'explore-events' is the ID of the section to scroll to
-              document.getElementById('explore-events')?.scrollIntoView({ behavior: 'smooth' });
+              document.getElementById('upcoming-event-section')?.scrollIntoView({ behavior: 'smooth' }); // Changed ID here
             }}
           >
             کاوش رویدادها
