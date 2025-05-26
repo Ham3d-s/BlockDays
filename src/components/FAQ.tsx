@@ -6,17 +6,20 @@ interface FAQItem {
   id: string;
   question: string;
   answer: string;
+  // No 'active' or 'tags' needed here as per current FAQItem usage in this file.
 }
 
-interface FAQCategory {
-  id: string;
-  name: string;
-  questions: FAQItem[];
-}
+// FAQCategory is no longer needed as we'll use a flat list of FAQItem
+// interface FAQCategory {
+//   id: string;
+//   name: string;
+//   questions: FAQItem[];
+// }
 
-const DEMO_MODE = true; // Enable to use hardcoded demo FAQs
+const DEMO_MODE = false; // Enable to use hardcoded demo FAQs
 
-const DEMO_FAQS: FAQCategory[] = [
+// DEMO_FAQS will be transformed into a flat FAQItem[] if used as fallback
+const DEMO_CATEGORIZED_FAQS: { id: string; name: string; questions: FAQItem[] }[] = [
   {
     id: 'cat-general',
     name: 'سوالات عمومی',
@@ -54,28 +57,37 @@ const DEMO_FAQS: FAQCategory[] = [
   }
 ];
 
+// Helper to flatten demo data if used as fallback
+const getDemoFaqItems = (): FAQItem[] => {
+  return DEMO_CATEGORIZED_FAQS.reduce((acc, category) => acc.concat(category.questions), [] as FAQItem[]);
+};
+
+
 const FAQ: React.FC = () => {
-  const [faqCategories, setFaqCategories] = useState<FAQCategory[]>([]);
+  const [faqItems, setFaqItems] = useState<FAQItem[]>([]); // Changed from faqCategories
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({}); // Tracks open state of each FAQ item by its ID
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const loadFAQs = async () => {
       try {
         setIsLoading(true);
         if (DEMO_MODE) {
-          setFaqCategories(DEMO_FAQS);
+          setFaqItems(getDemoFaqItems()); // Use flattened demo data
         } else {
-          // Assuming faq.json returns FAQCategory[] structure or needs mapping
-          const data = await fetchContent<FAQCategory[]>('faq.json'); 
-          setFaqCategories(data);
+          const data = await fetchContent<FAQItem[]>('faq.json'); // Expecting FAQItem[]
+          setFaqItems(data || []); // Ensure data is not null/undefined
         }
       } catch (err) {
         console.error('Failed to load FAQ:', err);
         setError('خطا در بارگذاری سوالات متداول. لطفاً بعداً دوباره تلاش کنید.');
-        if (DEMO_MODE) setFaqCategories(DEMO_FAQS); // Fallback for demo
+        if (DEMO_MODE) {
+          setFaqItems(getDemoFaqItems()); // Fallback to flattened demo data
+        } else {
+          setFaqItems([]); // Fallback to empty list on error if not in demo mode
+        }
       } finally {
         setIsLoading(false);
       }
@@ -87,22 +99,17 @@ const FAQ: React.FC = () => {
     setOpenItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const filteredFaqCategories = useMemo(() => {
+  const filteredFaqItems = useMemo(() => { // Renamed from filteredFaqCategories
     if (!searchTerm.trim()) {
-      return faqCategories;
+      return faqItems;
     }
     const lowerSearchTerm = searchTerm.toLowerCase();
-    return faqCategories
-      .map(category => ({
-        ...category,
-        questions: category.questions.filter(
-          item =>
-            item.question.toLowerCase().includes(lowerSearchTerm) ||
-            item.answer.toLowerCase().includes(lowerSearchTerm)
-        ),
-      }))
-      .filter(category => category.questions.length > 0);
-  }, [faqCategories, searchTerm]);
+    return faqItems.filter(
+      item =>
+        item.question.toLowerCase().includes(lowerSearchTerm) ||
+        item.answer.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [faqItems, searchTerm]);
 
 
   if (isLoading) {
@@ -116,7 +123,7 @@ const FAQ: React.FC = () => {
     );
   }
   
-  if (error && faqCategories.length === 0 && !DEMO_MODE) {
+  if (error && faqItems.length === 0 && !DEMO_MODE) { // Check faqItems
      return (
       <section id="faq" className="py-16 md:py-24 bg-base-200">
         <div className="container mx-auto px-4 text-center">
@@ -148,34 +155,24 @@ const FAQ: React.FC = () => {
           </div>
         </div>
         
-        {filteredFaqCategories.length > 0 ? (
-          <div className="space-y-8">
-            {filteredFaqCategories.map(category => (
-              <div key={category.id}>
-                <h3 className="text-xl md:text-2xl font-semibold mb-4 text-secondary border-r-4 border-primary pr-3">
-                  {category.name}
-                </h3>
-                <div className="space-y-3">
-                  {category.questions.map(item => (
-                    <div 
-                      key={item.id} 
-                      className="collapse collapse-arrow bg-base-200 rounded-lg shadow hover:shadow-md transition-shadow"
-                    >
-                      <input 
-                        type="checkbox" 
-                        checked={openItems[item.id] || false} 
-                        onChange={() => toggleItem(item.id)}
-                        className="min-h-[auto] peer" // Allow dynamic height
-                      /> 
-                      <div className="collapse-title text-base md:text-lg font-medium text-base-content peer-checked:text-primary flex items-center justify-between cursor-pointer py-3 sm:py-4">
-                        {item.question}
-                        {/* Chevron managed by collapse-arrow, or add custom one if needed */}
-                      </div>
-                      <div className="collapse-content text-base-content/80 bg-base-100/30 !pb-0"> {/* !pb-0 to remove extra padding if needed */}
-                         <p className="pt-2 pb-4 text-sm md:text-base leading-relaxed">{item.answer}</p>
-                      </div>
-                    </div>
-                  ))}
+        {filteredFaqItems.length > 0 ? ( // Use filteredFaqItems
+          <div className="space-y-3 max-w-3xl mx-auto"> {/* Removed outer space-y-8 and category mapping */}
+            {filteredFaqItems.map(item => ( // Iterate over filteredFaqItems
+              <div 
+                key={item.id} 
+                className="collapse collapse-arrow bg-base-200 rounded-lg shadow hover:shadow-md transition-shadow"
+              >
+                <input 
+                  type="checkbox" 
+                  checked={openItems[item.id] || false} 
+                  onChange={() => toggleItem(item.id)}
+                  className="min-h-[auto] peer"
+                /> 
+                <div className="collapse-title text-base md:text-lg font-medium text-base-content peer-checked:text-primary flex items-center justify-between cursor-pointer py-3 sm:py-4">
+                  {item.question}
+                </div>
+                <div className="collapse-content text-base-content/80 bg-base-100/30 !pb-0">
+                   <p className="pt-2 pb-4 text-sm md:text-base leading-relaxed">{item.answer}</p>
                 </div>
               </div>
             ))}

@@ -1,1 +1,8 @@
-/* /index.html 200 
+# This _redirects file is intended for hosting platforms like Netlify or Vercel
+# that support this syntax for SPA (Single Page Application) routing.
+# It tells the server to serve index.html for any path that doesn't match a file.
+#
+# Note: GitHub Pages does NOT use this file. For SPA routing on GitHub Pages,
+# a custom 404.html page with a redirect script is typically required.
+
+/* /index.html 200

@@ -12,7 +12,7 @@ interface SponsorEntry {
   websiteUrl: string; // Link to sponsor's website
 }
 
-const DEMO_MODE = true; // Enable to use hardcoded demo sponsors
+const DEMO_MODE = false; // Enable to use hardcoded demo sponsors
 
 const DEMO_SPONSORS: SponsorEntry[] = [
   // Platinum

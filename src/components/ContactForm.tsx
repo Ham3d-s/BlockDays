@@ -68,6 +68,15 @@ const ContactForm: React.FC = () => {
     try {
       // Simulate API call: await api.submitForm(formData);
       // console.log("Form data submitted:", formData);
+      // TODO: Implement actual API call for form submission.
+      // The following is a simulation and does not send data.
+      // Example:
+      // const response = await fetch('/api/contact', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData),
+      // });
+      // if (!response.ok) throw new Error('Network response was not ok.');
       await new Promise(resolve => setTimeout(resolve, 1500)); 
       setSubmitStatus('success');
       setFormData({ name: '', email: '', message: '' }); // Clear form

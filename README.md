@@ -1,6 +1,6 @@
 # BlockDays
 
-![BlockDays Banner](assets/banner.png) <!-- Replace with actual banner image if available -->
+![BlockDays Banner](assets/banner.png)
 
 > **BlockDays** is a modern, community-driven platform for discovering, organizing, and celebrating blockchain events. Designed for Persian-speaking audiences, BlockDays combines a sleek, accessible interface with robust event management and community features.
 
@@ -90,7 +90,6 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ```
 BlockDays/
 ├── public/
-│   └── assets/           # Images, icons, and static files
 ├── src/
 │   ├── components/       # React components (Header, Hero, Events, Gallery, etc.)
 │   ├── contexts/         # React context providers (e.g., ThemeContext)

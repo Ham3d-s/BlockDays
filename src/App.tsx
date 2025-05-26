@@ -8,7 +8,6 @@ const Hero = lazy(() => import('./components/Hero'));
 const UpcomingEvent = lazy(() => import('./components/UpcomingEvent'));
 const Stats = lazy(() => import('./components/Stats'));
 const PastEvents = lazy(() => import('./components/PastEvents'));
-// const VideoGallery = lazy(() => import('./components/VideoGallery')); // Temporarily disabled
 const ImageGallery = lazy(() => import('./components/ImageGallery'));
 const Sponsors = lazy(() => import('./components/Sponsors'));
 const FAQ = lazy(() => import('./components/FAQ'));
@@ -56,7 +55,6 @@ function App() {
               <UpcomingEvent />
               <Stats />
               <PastEvents />
-              {/* VideoGallery component temporarily disabled */}
               <ImageGallery />
               <Sponsors />
               <FAQ />

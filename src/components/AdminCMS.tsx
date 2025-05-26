@@ -14,7 +14,11 @@ const CONTENT_SECTIONS = [
 ];
 
 const ADMIN_PASSWORD_KEY = 'blockdays_admin_password';
-const DEFAULT_PASSWORD = 'admin'; // Change this as needed
+// WARNING: This is a hardcoded default password for the experimental Admin CMS.
+// It is NOT secure for production use. 
+// If this CMS is ever exposed publicly, this password MUST be changed 
+// and ideally replaced with a proper authentication mechanism.
+const DEFAULT_PASSWORD = 'blockdays2024'; // Change this as needed
 
 interface FAQItem {
   id: string;
@@ -1093,7 +1097,7 @@ function useCMSTheme() {
 
 function Sidebar({ activeSection, setActiveSection }: { activeSection: string, setActiveSection: (key: string) => void }) {
   const icons: Record<string, JSX.Element> = {
-    faq: <HelpCircle size={20} />, gallery: <ImageIcon size={20} />, 'past-events': <Calendar size={20} />, sponsors: <Star size={20} />, stats: <BarChart2 size={20} />, 'upcoming-event': <Video size={20} />
+    faq: <HelpCircle size={20} />, gallery: <ImageIcon size={20} />, 'past-events': <Calendar size={20} />, sponsors: <Star size={20} />, stats: <BarChart2 size={20} />, 'upcoming-event': <Video size={20} />,
   };
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen bg-gradient-to-b from-primary to-secondary text-base-100 shadow-lg z-40">
@@ -1121,7 +1125,7 @@ function Sidebar({ activeSection, setActiveSection }: { activeSection: string, s
   );
 }
 
-function TopBar({ onHelp, theme, toggleTheme }: { onHelp: () => void, theme: string, toggleTheme: () => void }) {
+function TopBar({ onHelp, theme, toggleTheme, onLogout }: { onHelp: () => void, theme: string, toggleTheme: () => void, onLogout: () => void }) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between bg-base-100/80 backdrop-blur px-6 py-3 shadow-sm border-b border-base-200">
       <div className="flex items-center gap-3">
@@ -1134,7 +1138,7 @@ function TopBar({ onHelp, theme, toggleTheme }: { onHelp: () => void, theme: str
         <button className="btn btn-ghost btn-circle" onClick={onHelp} title="راهنما">
           <Info size={20} />
         </button>
-        <button className="btn btn-ghost btn-circle" title="خروج">
+        <button className="btn btn-ghost btn-circle" title="خروج" onClick={onLogout}>
           <LogOut size={20} />
         </button>
       </div>
@@ -1233,6 +1237,13 @@ function AdminCMS() {
   const { theme, toggleTheme } = useCMSTheme();
   const [helpOpen, setHelpOpen] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem(ADMIN_PASSWORD_KEY);
+    setAuthed(false);
+    // Optionally, clear the password input field as well
+    setPassword(''); 
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(ADMIN_PASSWORD_KEY);
     if (saved === DEFAULT_PASSWORD) setAuthed(true);
@@ -1271,7 +1282,7 @@ function AdminCMS() {
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
       <FloatingQuickNav activeSection={activeSection} setActiveSection={setActiveSection} />
       <div className="flex-1 flex flex-col min-h-screen">
-        <TopBar onHelp={() => setHelpOpen(true)} theme={theme} toggleTheme={toggleTheme} />
+        <TopBar onHelp={() => setHelpOpen(true)} theme={theme} toggleTheme={toggleTheme} onLogout={handleLogout} />
         <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
           <GlobalImportExportBar onImport={setImportedData} />
           <h1 className="text-3xl font-extrabold mb-8 text-primary drop-shadow">{CONTENT_SECTIONS.find(s => s.key === activeSection)?.label}</h1>
