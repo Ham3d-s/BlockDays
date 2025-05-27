@@ -21,6 +21,11 @@ interface UpcomingEvent {
   active?: boolean; // Default to true if not provided
 }
 
+interface UpcomingEventsPageData {
+  title: string;
+  events: UpcomingEvent[];
+}
+
 // Demo mode toggle (set to true to always show demo events)
 const DEMO_MODE = false; // Set to true for demo/testing with new features
 
@@ -145,7 +150,11 @@ const DEFAULT_EVENTS: UpcomingEvent[] = [
   }
 ];
 
-// Removed EVENT_TYPES and SORT_OPTIONS
+const DEMO_UPCOMING_EVENTS_DATA: UpcomingEventsPageData = {
+  title: "رویدادهای پیش رو (پیش‌فرض)",
+  events: DEFAULT_EVENTS // Use the same demo events for simplicity
+};
+
 
 interface Countdown {
   days: number;
@@ -176,95 +185,67 @@ function calculateCountdown(dateString: string): Countdown {
 
 
 const UpcomingEvent: React.FC = () => {
-  const [allEvents, setAllEvents] = useState<UpcomingEvent[]>([]);
+  const [pageData, setPageData] = useState<UpcomingEventsPageData>(DEMO_MODE ? DEMO_UPCOMING_EVENTS_DATA : { title: "رویدادهای آینده", events: [] });
   const [countdowns, setCountdowns] = useState<Record<string, Countdown>>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!DEMO_MODE);
   const [error, setError] = useState('');
 
-  // Removed selectedType and sortOrder states
-
-  // Share Modal States
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedEventForShare, setSelectedEventForShare] = useState<UpcomingEventShare | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        setIsLoading(true);
-        let finalEventsToShow: UpcomingEvent[] = [];
+    if (DEMO_MODE) return;
 
-        if (DEMO_MODE) {
-          // In DEMO_MODE, use only active DEFAULT_EVENTS, limited to 3
-          finalEventsToShow = DEFAULT_EVENTS
+    const loadEvents = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchContent<UpcomingEventsPageData>('upcoming-event.json');
+        
+        let finalEventsToShow: UpcomingEvent[] = [];
+        const activeLiveEvents = (data?.events || [])
+          .filter(ev => ev && ev.id && ev.title && ev.date && ev.location && ev.type) // Basic validation
+          .filter(ev => ev.active !== undefined ? ev.active : true)
+          .map(event => ({
+            ...event,
+            image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
+          }));
+
+        if (activeLiveEvents.length === 0 && !DEMO_MODE) { // Only warn if not in demo and no live events
+          console.warn("No active events found in upcoming-event.json. Will attempt to use default upcoming events.");
+        }
+        finalEventsToShow = [...activeLiveEvents];
+
+        if (finalEventsToShow.length < 3) {
+          const activeDefaultEvents = DEFAULT_EVENTS
             .filter(event => event.active !== undefined ? event.active : true)
             .map(event => ({
               ...event,
               image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-            }))
-            .slice(0, 3);
-        } else {
-          // Fetch live events
-          const liveEventsData = await fetchContent<UpcomingEvent[] | UpcomingEvent>('upcoming-event.json');
-          let arrLiveEventsData = Array.isArray(liveEventsData) ? liveEventsData : [liveEventsData];
-          
-          const activeLiveEvents = arrLiveEventsData
-            .filter(ev => ev && ev.id && ev.title && ev.date && ev.location && ev.type) // Basic validation
-            .filter(ev => ev.active !== undefined ? ev.active : true)
-            .map(event => ({
-              ...event,
-              image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
             }));
-
-          if (activeLiveEvents.length === 0) {
-            console.warn("No active events found in upcoming-event.json. Will attempt to use default upcoming events.");
-          }
-
-          finalEventsToShow = [...activeLiveEvents];
-
-          // Supplement with active default events if needed, ensuring uniqueness
-          if (finalEventsToShow.length < 3) {
-            const activeDefaultEvents = DEFAULT_EVENTS
-              .filter(event => event.active !== undefined ? event.active : true)
-              .map(event => ({
-                ...event,
-                image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-              }));
-
-            for (const defaultEvent of activeDefaultEvents) {
-              if (finalEventsToShow.length >= 3) break;
-              // Add if ID is not already in finalEventsToShow
-              if (!finalEventsToShow.some(e => e.id === defaultEvent.id)) {
-                finalEventsToShow.push(defaultEvent);
-              }
+          for (const defaultEvent of activeDefaultEvents) {
+            if (finalEventsToShow.length >= 3) break;
+            if (!finalEventsToShow.some(e => e.id === defaultEvent.id)) {
+              finalEventsToShow.push(defaultEvent);
             }
           }
-          
-          // Ensure we don't exceed 3 events even after supplementation (e.g. if activeLiveEvents had 2, we add 1 default)
-          finalEventsToShow = finalEventsToShow.slice(0, 3);
-
-          // If after all this, finalEventsToShow is empty (e.g., JSON is empty/all inactive, AND DEFAULT_EVENTS are all inactive)
-          // it will naturally show the "no events" message, which is fine.
-          // The original fallback for completely empty live data was:
-          // if (activeEvents.length === 0 && !DEMO_MODE) { /* fallback to default */ }
-          // This new logic directly incorporates defaults if live data is insufficient.
         }
         
-        setAllEvents(finalEventsToShow);
+        setPageData({
+          title: data?.title || "رویدادهای آینده",
+          events: finalEventsToShow.slice(0, 3)
+        });
 
       } catch (err) {
         console.error("Error loading events, falling back to default events for supplementation:", err);
         setError('خطا در بارگذاری رویدادهای آینده. نمایش رویدادهای پیش‌فرض در صورت امکان.');
-        
-        // Fallback strategy on error: use up to 3 active default events
-        const activeDefaultEventsOnError = DEFAULT_EVENTS
-          .filter(event => event.active !== undefined ? event.active : true)
-          .map(event => ({
-            ...event,
-            image: event.image || `/images/events/default-${event.type || 'event'}.jpg`
-          }))
-          .slice(0, 3);
-        setAllEvents(activeDefaultEventsOnError);
+        setPageData({
+            title: "رویدادهای آینده (خطا)",
+            events: DEFAULT_EVENTS
+                .filter(event => event.active !== undefined ? event.active : true)
+                .map(event => ({ ...event, image: event.image || `/images/events/default-${event.type || 'event'}.jpg`}))
+                .slice(0, 3)
+        });
       } finally {
         setIsLoading(false);
       }
@@ -273,13 +254,13 @@ const UpcomingEvent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!allEvents.length) {
+    if (!pageData.events.length) {
       setCountdowns({});
       return;
     }
     const updateAllCountdowns = () => {
       const newCountdowns: Record<string, Countdown> = {};
-      allEvents.forEach(event => {
+      pageData.events.forEach(event => {
         newCountdowns[event.id] = calculateCountdown(event.date);
       });
       setCountdowns(newCountdowns);
@@ -287,14 +268,12 @@ const UpcomingEvent: React.FC = () => {
     updateAllCountdowns();
     const timer = setInterval(updateAllCountdowns, 1000);
     return () => clearInterval(timer);
-  }, [allEvents]);
+  }, [pageData.events]);
 
   const processedEvents = useMemo(() => {
-    // No more filtering or sorting here, just use allEvents (which is already sliced to 3)
-    return allEvents;
-  }, [allEvents]);
+    return pageData.events; // Already sliced and processed in loadEvents
+  }, [pageData.events]);
 
-  // Share Modal Handlers
   const handleShareClick = (event: UpcomingEventShare) => {
     setSelectedEventForShare(event);
     setShareModalOpen(true);
@@ -335,29 +314,24 @@ const UpcomingEvent: React.FC = () => {
     <section id="upcoming-event-section" className="py-16 md:py-24 bg-base-200">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-12 text-center text-primary">
-          {/* Calendar icon removed from title */}
-          رویدادهای آینده
+          {pageData.title}
         </h2>
-
-        {/* Filters and Sorting Controls REMOVED */}
         
         {error && (
           <div className="alert alert-error shadow-lg my-6">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <span>{error} {/* Displaying error if one occurs, even with demo data as fallback */}</span>
+              <span>{error}</span>
             </div>
           </div>
         )}
 
-        {processedEvents.length === 0 && !error && !isLoading && ( // Adjusted condition
+        {processedEvents.length === 0 && !error && !isLoading && (
           <div className="text-center py-10">
-            {/* Icon changed from Tag to Calendar for consistency, or remove if not desired */}
             <Calendar className="w-16 h-16 mx-auto text-base-content/30 mb-4" /> 
             <p className="text-xl text-base-content/70">
               در حال حاضر هیچ رویداد آینده‌ای برای نمایش وجود ندارد.
             </p>
-            {/* Removed button to show all events as filters are gone */}
           </div>
         )}
 

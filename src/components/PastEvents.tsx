@@ -22,12 +22,83 @@ interface PastEvent {
   };
 }
 
+interface PastEventsPageData {
+  title: string;
+  items: PastEvent[];
+}
+
 const DEMO_MODE = false; // Enable demo mode to use hardcoded data
 
-const DEMO_PAST_EVENTS: PastEvent[] = [
-  {
-    id: 'past-conf-1',
-    title: 'همایش بزرگ بلاکچین ۱۴۰۲',
+const DEMO_PAST_EVENTS_DATA: PastEventsPageData = {
+  title: "رویدادهای گذشته (پیش‌فرض)",
+  items: [
+    {
+      id: 'past-conf-1',
+      title: 'همایش بزرگ بلاکچین ۱۴۰۲',
+      date: '1402/08/15', // Example Farsi date
+      location: 'مرکز همایش‌های برج میلاد، تهران',
+      category: 'conference',
+      image: '/images/gallery/event1.svg', // Placeholder, replace with actual if available
+      description: 'مروری بر آخرین تحولات دنیای بلاکچین و رمزارزها با حضور برترین متخصصان داخلی و خارجی.',
+      highlights: [
+        'سخنرانی‌های کلیدی از پیشگامان صنعت',
+        'پنل‌های تخصصی در مورد دیفای، NFT و وب ۳',
+        'فرصت‌های شبکه‌سازی گسترده',
+      ],
+      tags: ['بلاکچین', 'همایش', 'تهران', 'دیفای', 'NFT', 'وب ۳'],
+      resources: {
+        youtube: 'https://youtube.com/example-conf1',
+        gallery: '#gallery-link-conf1',
+        slides: '#slides-link-conf1'
+      },
+    },
+    {
+      id: 'past-meetup-1',
+      title: 'میت‌آپ ماهانه جامعه اتریوم ایران',
+      date: '1402/05/20',
+      location: 'فضای کار اشتراکی زاویه، اصفهان',
+      category: 'meetup',
+      image: '/images/gallery/event2.svg',
+      description: 'دورهمی صمیمانه اعضای جامعه اتریوم ایران برای بحث و تبادل نظر پیرامون آخرین پروژه‌ها و ایده‌ها.',
+      highlights: ['ارائه پروژه‌های جدید توسط اعضا', 'بحث آزاد در مورد آینده اتریوم'],
+      tags: ['اتریوم', 'میت‌آپ', 'اصفهان', 'جامعه'],
+      resources: {
+        youtube: 'https://youtube.com/example-meetup1',
+      },
+    },
+    {
+      id: 'past-workshop-1',
+      title: 'کارگاه عملی توسعه قرارداد هوشمند',
+      date: '1401/12/10',
+      location: 'دانشگاه صنعتی شریف، تهران',
+      category: 'workshop',
+      image: '/images/gallery/event3.svg',
+      description: 'آموزش گام به گام نوشتن، تست و دیپلوی قراردادهای هوشمند بر روی شبکه اتریوم.',
+      highlights: ['یادگیری سالیدیتی از پایه', 'انجام پروژه‌های عملی', 'دریافت گواهی شرکت در کارگاه'],
+      tags: ['قرارداد هوشمند', 'کارگاه', 'سالیدیتی', 'برنامه‌نویسی', 'تهران'],
+      resources: {
+        slides: '#slides-workshop1',
+        other: [{ label: 'مخزن کد گیت‌هاب', url: '#github-repo' }]
+      },
+    },
+    {
+      id: 'past-webinar-1',
+      title: 'وبینار امنیت در فضای دیفای',
+      date: '1402/03/05',
+      location: 'آنلاین',
+      category: 'webinar',
+      image: '/images/gallery/event4.svg',
+      description: 'بررسی مهم‌ترین ریسک‌های امنیتی در پروتکل‌های دیفای و نحوه محافظت از دارایی‌ها.',
+      highlights: ['تحلیل حملات رایج به پلتفرم‌های دیفای', 'معرفی ابزارهای امنیتی', 'پرسش و پاسخ با کارشناس امنیت'],
+      tags: ['دیفای', 'امنیت', 'وبینار', 'آنلاین'],
+      resources: {
+        youtube: 'https://youtube.com/example-webinar1',
+      },
+    }
+  ]
+};
+
+// Share functionality (can be kept similar)
     date: '1402/08/15', // Example Farsi date
     location: 'مرکز همایش‌های برج میلاد، تهران',
     category: 'conference',
@@ -131,11 +202,11 @@ const shareOptions: ShareOption[] = [
 
 
 const PastEvents: React.FC = () => {
-  const [allPastEvents, setAllPastEvents] = useState<PastEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [pageData, setPageData] = useState<PastEventsPageData>(DEMO_MODE ? DEMO_PAST_EVENTS_DATA : { title: "مروری بر رویدادهای گذشته", items: [] });
+  const [isLoading, setIsLoading] = useState(!DEMO_MODE);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1); // Added for pagination
+  const [currentPage, setCurrentPage] = useState(1);
   
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedEventForShare, setSelectedEventForShare] = useState<PastEvent | null>(null);
@@ -154,31 +225,30 @@ const PastEvents: React.FC = () => {
     conference: <Users size={16} className="ml-1" />,
     videocast: <Tv size={16} className="ml-1" />,
     workshop: <ListChecks size={16} className="ml-1" />,
-    webinar: <Users size={16} className="ml-1" />, // Changed Clock to Users or another relevant icon as Clock is removed
+    webinar: <Users size={16} className="ml-1" />,
   };
 
   useEffect(() => {
+    if (DEMO_MODE) return;
+
     const loadEvents = async () => {
       try {
         setIsLoading(true);
-        let data: PastEvent[];
-        if (DEMO_MODE) {
-          data = DEMO_PAST_EVENTS.map(event => ({
+        const data = await fetchContent<PastEventsPageData>('past-events.json');
+        setPageData({
+          title: data?.title || "مروری بر رویدادهای گذشته",
+          items: (data?.items || []).map(event => ({
             ...event,
-            year: event.date.split('/')[0] // Extract year for Farsi dates like "1402/08/15"
-          }));
-        } else {
-          const fetchedData = await fetchContent<Omit<PastEvent, 'year'>[]>('past-events.json');
-          data = fetchedData.map(event => ({
-            ...event,
-            year: new Date(event.date).getFullYear().toString() // Assuming standard date format for non-demo
-          }));
-        }
-        setAllPastEvents(data);
+            year: event.date.includes('/') ? event.date.split('/')[0] : new Date(event.date).getFullYear().toString()
+          }))
+        });
       } catch (err) {
         console.error('Failed to load past events:', err);
         setError('خطا در بارگذاری رویدادهای گذشته. لطفاً بعداً دوباره تلاش کنید.');
-        if (DEMO_MODE) setAllPastEvents(DEMO_PAST_EVENTS.map(event => ({ ...event, year: event.date.split('/')[0] }))); // Fallback to demo data
+        setPageData({ 
+            title: "رویدادهای گذشته (خطا)", 
+            items: DEMO_PAST_EVENTS_DATA.items.map(event => ({ ...event, year: event.date.split('/')[0] }))
+        });
       } finally {
         setIsLoading(false);
       }
@@ -187,9 +257,9 @@ const PastEvents: React.FC = () => {
   }, []);
 
   const filteredEvents = useMemo(() => {
-    if (!searchTerm) return allPastEvents;
+    if (!searchTerm) return pageData.items;
     const lowerSearchTerm = searchTerm.toLowerCase();
-    return allPastEvents.filter(event => {
+    return pageData.items.filter(event => {
       const yearMatch = event.year && event.year.includes(lowerSearchTerm);
       const titleMatch = event.title.toLowerCase().includes(lowerSearchTerm);
       const categoryMatch = categoryTranslation[event.category].toLowerCase().includes(lowerSearchTerm);
@@ -199,9 +269,8 @@ const PastEvents: React.FC = () => {
 
       return titleMatch || categoryMatch || yearMatch || tagMatch || highlightMatch || descriptionMatch;
     });
-  }, [allPastEvents, searchTerm]);
+  }, [pageData.items, searchTerm]);
 
-  // Reset to page 1 when search term changes
   useEffect(() => {
     if (searchTerm) {
       setCurrentPage(1);
@@ -260,16 +329,14 @@ const PastEvents: React.FC = () => {
       </section>
     );
   }
-  // Removed TimelineCard component
 
   return (
     <section id="past-events" className="py-16 md:py-24 bg-base-100">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-8 md:mb-12 text-primary">
-          مروری بر رویدادهای گذشته
+          {pageData.title}
         </h2>
 
-        {/* Search Bar */}
         <div className="mb-10 md:mb-12 max-w-xl mx-auto">
           <div className="relative">
             <input

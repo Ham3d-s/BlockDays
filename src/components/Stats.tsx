@@ -15,98 +15,125 @@ interface JsonStatItem {
   suffix?: string;
 }
 
+// Interface for what the component will use internally after transformation
 interface StatItem {
   id: string;
   icon: React.ReactNode;
   title: string;
   value: number;
-  context: string; // New field for contextual explanation
-  suffix?: string; // e.g., "+" or "K"
+  context: string;
+  suffix?: string;
 }
 
-// Removed eventGrowthData and eventTypeData constants
+// Structure for the entire stats page data including a title
+interface StatsPageData {
+  title: string;
+  items: JsonStatItem[]; // Items as they come from JSON
+}
 
-const initialStatsData: StatItem[] = [
-  { id: 'events', icon: <Award className="w-10 h-10" />, title: 'رویداد موفق', value: 60, context: 'تعداد کل رویدادهای موفق برگزار شده تا کنون', suffix: '+' },
-  { id: 'participants', icon: <Users className="w-10 h-10" />, title: 'شرکت‌کننده', value: 15000, context: 'مجموع شرکت‌کنندگان در تمام رویدادهای ما', suffix: '+' },
-  { id: 'speakers', icon: <Users2 className="w-10 h-10" />, title: 'سخنران متخصص', value: 200, context: 'تعداد سخنرانان و متخصصان برجسته دعوت شده', suffix: '+' },
-  { id: 'hours', icon: <Clock className="w-10 h-10" />, title: 'ساعت محتوا', value: 800, context: 'مجموع ساعات محتوای آموزشی و تخصصی ارائه شده', suffix: '+' },
-];
+const defaultPageTitle = "آمار و دستاوردهای ما";
+
+const initialPageData: StatsPageData = {
+  title: defaultPageTitle,
+  items: [ // Items here are JsonStatItem structure
+    { icon: 'Award', title: 'رویداد موفق', value: 60, tooltip: 'تعداد کل رویدادهای موفق برگزار شده تا کنون', suffix: '+' },
+    { icon: 'Users', title: 'شرکت‌کننده', value: 15000, tooltip: 'مجموع شرکت‌کنندگان در تمام رویدادهای ما', suffix: '+' },
+    { icon: 'Users2', title: 'سخنران متخصص', value: 200, tooltip: 'تعداد سخنرانان و متخصصان برجسته دعوت شده', suffix: '+' },
+    { icon: 'Clock', title: 'ساعت محتوا', value: 800, tooltip: 'مجموع ساعات محتوای آموزشی و تخصصی ارائه شده', suffix: '+' },
+  ]
+};
 
 const Stats: React.FC = () => {
-  const [statsData, setStatsData] = useState<StatItem[]>(initialStatsData);
+  const [pageData, setPageData] = useState<StatsPageData>(initialPageData);
+  const [transformedStats, setTransformedStats] = useState<StatItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  // const [error, setError] = useState(''); // Optional: for displaying fetch errors
+
   const statsRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const { observeElement } = useIntersectionObserver();
 
-  // Helper function to map icon string to ReactNode
-  const mapIconStringToNode = (iconString?: string): React.ReactNode => {
-    const iconProps = { className: "w-10 h-10" }; // Default props for icons
-    switch (iconString?.toLowerCase()) {
-      // Mappings for original initialStatsData (if still relevant or as fallback)
-      case 'award':
-        return <Award {...iconProps} />;
-      // case 'users': // 'users' from initialStatsData might conflict with 'people' from JSON if not handled carefully
-      //   return <Users {...iconProps} />; 
-      case 'users2': // For "سخنران متخصص" if using initial data
-        return <Users2 {...iconProps} />;
-      case 'clock':
-        return <Clock {...iconProps} />;
-      
-      // Mappings for stats.json values
-      case 'event': // From stats.json "icon": "event"
-        return <CalendarDays {...iconProps} />;
-      case 'calendar_today': // From stats.json "icon": "calendar_today"
-        return <CalendarClock {...iconProps} />;
-      case 'people': // From stats.json "icon": "people"
-        return <Users {...iconProps} />; // Re-using Users icon
-      case 'groups': // From stats.json "icon": "groups"
-        return <UsersRound {...iconProps} />;
-      case 'business': // From stats.json "icon": "business"
-        return <Briefcase {...iconProps} />;
-
-      // Aliases from previous implementation (if any item in JSON might use these)
-      case 'events': 
-        return <Award {...iconProps} />; // Or CalendarDays if more appropriate
-      case 'participants': 
-        return <Users {...iconProps} />; // Or UsersRound
-      case 'speakers': 
-        return <Users2 {...iconProps} />;
-      case 'hours': 
-        return <Clock {...iconProps} />;
-        
-      default:
-        console.warn(`Unknown icon string: ${iconString}, using default HelpCircle.`);
-        return <HelpCircle {...iconProps} />; // Default fallback icon
-    }
-  };
-
   useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const jsonStats = await fetchContent<JsonStatItem[]>('stats.json');
-        if (jsonStats && jsonStats.length > 0) {
-          const transformedStats: StatItem[] = jsonStats.map((item, index) => ({
-            id: item.title.toLowerCase().replace(/\s+/g, '-') || `stat-${index}`, // Generate ID
-            icon: mapIconStringToNode(item.icon),
-            title: item.title,
-            value: item.value,
-            context: item.tooltip, // Map tooltip to context
-            suffix: item.suffix || (item.value > 1000 ? '+' : undefined), // Example default suffix logic
-          }));
-          setStatsData(transformedStats);
-        } else {
-          console.warn('Fetched stats.json is empty or invalid, using initial hardcoded data.');
-          setStatsData(initialStatsData); // Fallback to initial data
-        }
-      } catch (error) {
-        console.error('Failed to fetch or process stats.json:', error);
-        setStatsData(initialStatsData); // Fallback to initial data on error
+    // Helper function to map icon string to ReactNode, placed inside useEffect or outside component if static
+    const mapIconStringToNode = (iconString?: string): React.ReactNode => {
+      const iconProps = { className: "w-10 h-10" };
+      switch (iconString?.toLowerCase()) {
+        case 'award': return <Award {...iconProps} />;
+        case 'users2': return <Users2 {...iconProps} />;
+        case 'clock': return <Clock {...iconProps} />;
+        case 'event': return <CalendarDays {...iconProps} />;
+        case 'calendar_today': return <CalendarClock {...iconProps} />;
+        case 'people': return <Users {...iconProps} />;
+        case 'groups': return <UsersRound {...iconProps} />;
+        case 'business': return <Briefcase {...iconProps} />;
+        case 'events': return <Award {...iconProps} />;
+        case 'participants': return <Users {...iconProps} />;
+        case 'speakers': return <Users2 {...iconProps} />;
+        case 'hours': return <Clock {...iconProps} />;
+        default:
+          console.warn(`Unknown icon string: ${iconString}, using default HelpCircle.`);
+          return <HelpCircle {...iconProps} />;
       }
     };
 
+    const loadStats = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchContent<StatsPageData>('stats.json');
+        setPageData({
+          title: data?.title || defaultPageTitle,
+          items: data?.items || initialPageData.items,
+        });
+      } catch (error) {
+        console.error('Failed to fetch or process stats.json:', error);
+        // setError('Failed to load stats. Using default data.'); // Optional: set error state
+        setPageData(initialPageData); // Fallback to initial data on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
     loadStats();
-  }, []); // Empty dependency array to run once on mount
+  }, []); 
+
+  useEffect(() => {
+    // Transform items when pageData.items changes
+    const transformAndSetStats = (items: JsonStatItem[]) => {
+        const mappedItems: StatItem[] = items.map((item, index) => ({
+          id: item.title.toLowerCase().replace(/\s+/g, '-') || `stat-${index}`,
+          icon: mapIconStringToNode(item.icon), // mapIconStringToNode needs to be accessible here
+          title: item.title,
+          value: item.value,
+          context: item.tooltip,
+          suffix: item.suffix || (item.value > 1000 ? '+' : undefined),
+        }));
+        setTransformedStats(mappedItems);
+    };
+
+    // Re-define mapIconStringToNode here if not defined in the outer scope or passed as prop
+    const mapIconStringToNode = (iconString?: string): React.ReactNode => {
+      const iconProps = { className: "w-10 h-10" };
+      switch (iconString?.toLowerCase()) {
+        case 'award': return <Award {...iconProps} />;
+        case 'users2': return <Users2 {...iconProps} />;
+        case 'clock': return <Clock {...iconProps} />;
+        case 'event': return <CalendarDays {...iconProps} />;
+        case 'calendar_today': return <CalendarClock {...iconProps} />;
+        case 'people': return <Users {...iconProps} />;
+        case 'groups': return <UsersRound {...iconProps} />;
+        case 'business': return <Briefcase {...iconProps} />;
+        case 'events': return <Award {...iconProps} />;
+        case 'participants': return <Users {...iconProps} />;
+        case 'speakers': return <Users2 {...iconProps} />;
+        case 'hours': return <Clock {...iconProps} />;
+        default: return <HelpCircle {...iconProps} />;
+      }
+    };
+
+    if (pageData.items) {
+        transformAndSetStats(pageData.items);
+    }
+  }, [pageData.items]);
+
 
   useEffect(() => {
     const currentRef = statsRef.current;
@@ -131,12 +158,12 @@ const Stats: React.FC = () => {
 
 
   useEffect(() => {
-    if (isVisible && statsData.length > 0) {
-      statsData.forEach(stat => {
+    if (isVisible && transformedStats.length > 0) {
+      transformedStats.forEach(stat => {
         animateStat(stat.id, stat.value);
       });
     }
-  }, [isVisible, statsData]); // Keep this effect for animation logic
+  }, [isVisible, transformedStats]);
 
   const animateStat = (statId: string, targetValue: number) => {
     const element = document.getElementById(`stat-value-${statId}`);
@@ -174,12 +201,11 @@ const Stats: React.FC = () => {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16 text-primary">
           <BarChart3 className="inline-block w-8 h-8 md:w-10 md:h-10 mr-3" />
-          آمار و دستاوردهای ما
+          {pageData.title || defaultPageTitle}
         </h2>
 
-        {/* Key Statistics Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12 md:mb-16">
-          {statsData.map((stat) => (
+          {transformedStats.map((stat) => (
             <div 
               key={stat.id} 
               className="bg-base-100 p-6 rounded-xl shadow-lg text-center transition-all duration-300 hover:shadow-primary/30 hover:-translate-y-1 group"
@@ -200,8 +226,6 @@ const Stats: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* Charts Section Removed */}
       </div>
     </section>
   );

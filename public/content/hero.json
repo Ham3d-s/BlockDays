@@ -1,0 +1,12 @@
+{
+  "title": "Default Hero Title",
+  "subtitle": "Default Hero Subtitle for more context.",
+  "ctaButton1": {
+    "text": "Explore Events",
+    "targetSectionId": "#events"
+  },
+  "ctaButton2": {
+    "text": "Learn About Us",
+    "targetSectionId": "#about"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "sectionTitle": "Get in Touch",
+  "sectionSubtitle": "We'd love to hear from you. Please fill out the form below or use one of the alternative contact methods.",
+  "labels": {
+    "name": "Full Name",
+    "email": "Email Address",
+    "message": "Your Message"
+  },
+  "placeholders": {
+    "name": "Enter your full name",
+    "email": "you@example.com",
+    "message": "Type your message here..."
+  },
+  "buttonText": "Send Message",
+  "buttonTextSubmitting": "Sending...",
+  "successMessage": "Your message has been sent successfully! We'll get back to you soon.",
+  "errorMessage": "Oops! Something went wrong. Please try again later or use an alternative contact method.",
+  "alternativeContactTitle": "Other Ways to Reach Us",
+  "alternativeContactLinks": [
+    {
+      "id": "1",
+      "text": "Join our Discord",
+      "url": "https://discord.gg/blockdays",
+      "icon": "Discord"
+    },
+    {
+      "id": "2",
+      "text": "Email Us Directly",
+      "url": "mailto:info@blockdays.com",
+      "icon": "Mail"
+    }
+  ]
+}
