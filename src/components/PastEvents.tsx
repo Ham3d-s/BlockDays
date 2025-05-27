@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchContent } from '../utils/api';
-import { Share2, Calendar, Video, Users, MapPin, Search, ListChecks, Tv, Link as LinkIcon, Image as ImageIcon, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'; // Removed Clock, Added ExternalLink
+import { Share2, Calendar, Video, Users, Search, ListChecks, Tv, Link as LinkIcon, ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'; // Removed Clock, Added ExternalLink, MapPin, ImageIcon
 
 // Updated Event Interface
 interface PastEvent {
@@ -97,69 +97,6 @@ const DEMO_PAST_EVENTS_DATA: PastEventsPageData = {
     }
   ]
 };
-
-// Share functionality (can be kept similar)
-    date: '1402/08/15', // Example Farsi date
-    location: 'مرکز همایش‌های برج میلاد، تهران',
-    category: 'conference',
-    image: '/images/gallery/event1.svg', // Placeholder, replace with actual if available
-    description: 'مروری بر آخرین تحولات دنیای بلاکچین و رمزارزها با حضور برترین متخصصان داخلی و خارجی.',
-    highlights: [
-      'سخنرانی‌های کلیدی از پیشگامان صنعت',
-      'پنل‌های تخصصی در مورد دیفای، NFT و وب ۳',
-      'فرصت‌های شبکه‌سازی گسترده',
-    ],
-    tags: ['بلاکچین', 'همایش', 'تهران', 'دیفای', 'NFT', 'وب ۳'],
-    resources: {
-      youtube: 'https://youtube.com/example-conf1',
-      gallery: '#gallery-link-conf1',
-      slides: '#slides-link-conf1'
-    },
-  },
-  {
-    id: 'past-meetup-1',
-    title: 'میت‌آپ ماهانه جامعه اتریوم ایران',
-    date: '1402/05/20',
-    location: 'فضای کار اشتراکی زاویه، اصفهان',
-    category: 'meetup',
-    image: '/images/gallery/event2.svg',
-    description: 'دورهمی صمیمانه اعضای جامعه اتریوم ایران برای بحث و تبادل نظر پیرامون آخرین پروژه‌ها و ایده‌ها.',
-    highlights: ['ارائه پروژه‌های جدید توسط اعضا', 'بحث آزاد در مورد آینده اتریوم'],
-    tags: ['اتریوم', 'میت‌آپ', 'اصفهان', 'جامعه'],
-    resources: {
-      youtube: 'https://youtube.com/example-meetup1',
-    },
-  },
-  {
-    id: 'past-workshop-1',
-    title: 'کارگاه عملی توسعه قرارداد هوشمند',
-    date: '1401/12/10',
-    location: 'دانشگاه صنعتی شریف، تهران',
-    category: 'workshop',
-    image: '/images/gallery/event3.svg',
-    description: 'آموزش گام به گام نوشتن، تست و دیپلوی قراردادهای هوشمند بر روی شبکه اتریوم.',
-    highlights: ['یادگیری سالیدیتی از پایه', 'انجام پروژه‌های عملی', 'دریافت گواهی شرکت در کارگاه'],
-    tags: ['قرارداد هوشمند', 'کارگاه', 'سالیدیتی', 'برنامه‌نویسی', 'تهران'],
-    resources: {
-      slides: '#slides-workshop1',
-      other: [{ label: 'مخزن کد گیت‌هاب', url: '#github-repo' }]
-    },
-  },
-  {
-    id: 'past-webinar-1',
-    title: 'وبینار امنیت در فضای دیفای',
-    date: '1402/03/05',
-    location: 'آنلاین',
-    category: 'webinar',
-    image: '/images/gallery/event4.svg',
-    description: 'بررسی مهم‌ترین ریسک‌های امنیتی در پروتکل‌های دیفای و نحوه محافظت از دارایی‌ها.',
-    highlights: ['تحلیل حملات رایج به پلتفرم‌های دیفای', 'معرفی ابزارهای امنیتی', 'پرسش و پاسخ با کارشناس امنیت'],
-    tags: ['دیفای', 'امنیت', 'وبینار', 'آنلاین'],
-    resources: {
-      youtube: 'https://youtube.com/example-webinar1',
-    },
-  }
-];
 
 
 // Share functionality (can be kept similar)
@@ -269,7 +206,7 @@ const PastEvents: React.FC = () => {
 
       return titleMatch || categoryMatch || yearMatch || tagMatch || highlightMatch || descriptionMatch;
     });
-  }, [pageData.items, searchTerm]);
+  }, [pageData.items, searchTerm, categoryTranslation]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -298,7 +235,7 @@ const PastEvents: React.FC = () => {
         await navigator.clipboard.writeText(getShareUrl(event));
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
-      } catch (err) {
+      } catch {
         alert('کپی لینک ناموفق بود.');
       }
     } else if (option.getUrl) {

@@ -65,11 +65,12 @@ const Sponsors: React.FC = () => {
         setIsLoading(true);
         let finalSponsorsToSet: SponsorEntry[];
         let pageTitle = "با حامیان ما آشنا شوید";
+        let liveSponsors: SponsorEntry[] = []; // Initialize here
 
         try {
           const fetchedData = await fetchContent<SponsorsPageData>('sponsors.json');
           pageTitle = fetchedData?.title || pageTitle;
-          const liveSponsors = (fetchedData?.items || []).map((item: any) => ({
+          liveSponsors = (fetchedData?.items || []).map((item: any) => ({
               id: item.id || `live-id-${Math.random().toString(36).substr(2, 9)}`,
               name: item.name || "Unnamed Sponsor",
               logo: item.logo,
@@ -79,7 +80,7 @@ const Sponsors: React.FC = () => {
           })).filter(sponsor => sponsor.logo);
         } catch (fetchErr) {
            console.warn('Fetching sponsors.json failed or it was empty, will use demo sponsors for supplementation.', fetchErr);
-           liveSponsors = []; // Ensure it's an empty array if fetch fails
+           // liveSponsors remains [] as initialized
         }
         
         finalSponsorsToSet = [...liveSponsors];

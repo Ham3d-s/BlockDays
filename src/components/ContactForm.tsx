@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { validateName, validateEmail, validateMessage } from '../utils/validation';
-import { Mail, MessageSquareText, User, Send, Linkedin, Twitter, Send as TelegramIcon, ExternalLink, Info, Users } from 'lucide-react';
+import { Mail, MessageSquareText, User, Send, Linkedin, Twitter, Send as TelegramIcon, ExternalLink, Users } from 'lucide-react';
 import { fetchContent } from '../utils/api';
 
 interface ContactFormLabels { name: string; email: string; message: string; }
@@ -61,7 +61,7 @@ const ContactForm: React.FC = () => {
       }
     };
     loadData();
-  }, []);
+  }, [defaultContent]);
 
   const defaultContent: ContactFormConfig = {
     sectionTitle: "در تماس باشید",
@@ -95,7 +95,7 @@ const ContactForm: React.FC = () => {
       case 'name': error = validateName(value); break;
       case 'email': error = validateEmail(value); break;
       case 'message': error = validateMessage(value); break;
-      default: const exhaustiveCheck: never = name; return exhaustiveCheck;
+      default: { const exhaustiveCheck: never = name; return exhaustiveCheck; }
     }
     setErrors(prev => ({ ...prev, [name]: error }));
     return !error;

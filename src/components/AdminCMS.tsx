@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { fetchContent, updateContentFile } from '../utils/api';
-// @ts-ignore
+// @ts-expect-error // Using JSZip without type declarations
 import JSZip from 'jszip';
-import { Info, User, HelpCircle, LogOut, Home, Image as ImageIcon, Calendar, BarChart2, Star, Video, Settings, LayoutHeader, LayoutDashboard, LayoutPanelBottom, MessageSquare } from 'lucide-react';
+import { Info, User, HelpCircle, LogOut, Home, Image as ImageIcon, Calendar, BarChart2, Star, Video, Settings, LayoutPanelTop, LayoutDashboard, PanelBottom, MessageSquare } from 'lucide-react';
 import { showToast } from '../utils/helpers';
 
 const CONTENT_SECTIONS = [
@@ -59,7 +59,7 @@ function GlobalSettingsEditor({ imported }: { imported: GlobalSettingsType | nul
         setError('');
         const data = await fetchContent<GlobalSettingsType>('global.json');
         setSettings(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری تنظیمات عمومی. از مقادیر پیش‌فرض استفاده می‌شود.');
         // Use default if fetch fails
         setSettings({ siteName: 'BlockDays Default', siteLogoUrl: '/images/logo-default.png', contactEmail: 'contact@example.com' });
@@ -264,7 +264,7 @@ function ContactFormConfigEditor({ imported }: { imported: ContactFormConfigType
   
   useEffect(() => {
     if (imported) {
-      setConfig(prev => ({ ...defaultConfig, ...imported, labels: {...defaultConfig.labels, ...imported.labels}, placeholders: {...defaultConfig.placeholders, ...imported.placeholders}, alternativeContactLinks: imported.alternativeContactLinks || [] }));
+      setConfig({ ...defaultConfig, ...imported, labels: {...defaultConfig.labels, ...imported.labels}, placeholders: {...defaultConfig.placeholders, ...imported.placeholders}, alternativeContactLinks: imported.alternativeContactLinks || [] });
       setIsLoading(false);
       return;
     }
@@ -273,8 +273,8 @@ function ContactFormConfigEditor({ imported }: { imported: ContactFormConfigType
         setIsLoading(true);
         setError('');
         const data = await fetchContent<ContactFormConfigType>('contact-form.json');
-        setConfig(prev => ({ ...defaultConfig, ...data, labels: {...defaultConfig.labels, ...data.labels}, placeholders: {...defaultConfig.placeholders, ...data.placeholders}, alternativeContactLinks: data.alternativeContactLinks || [] }));
-      } catch (err) {
+        setConfig({ ...defaultConfig, ...data, labels: {...defaultConfig.labels, ...data.labels}, placeholders: {...defaultConfig.placeholders, ...data.placeholders}, alternativeContactLinks: data.alternativeContactLinks || [] });
+      } catch {
         setError('خطا در بارگذاری تنظیمات فرم تماس. از مقادیر پیش‌فرض استفاده می‌شود.');
         setConfig(defaultConfig);
       } finally {
@@ -282,7 +282,7 @@ function ContactFormConfigEditor({ imported }: { imported: ContactFormConfigType
       }
     };
     loadConfig();
-  }, [imported]);
+  }, [imported, defaultConfig]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -495,7 +495,7 @@ function FooterConfigEditor({ imported }: { imported: FooterConfigType | null })
 
   useEffect(() => {
     if (imported) {
-      setConfig(prev => ({ ...defaultConfig, ...imported, newsletter: {...defaultConfig.newsletter, ...imported.newsletter}, socialMediaLinks: imported.socialMediaLinks || [] }));
+      setConfig({ ...defaultConfig, ...imported, newsletter: {...defaultConfig.newsletter, ...imported.newsletter}, socialMediaLinks: imported.socialMediaLinks || [] });
       setIsLoading(false);
       return;
     }
@@ -504,8 +504,8 @@ function FooterConfigEditor({ imported }: { imported: FooterConfigType | null })
         setIsLoading(true);
         setError('');
         const data = await fetchContent<FooterConfigType>('footer.json');
-        setConfig(prev => ({ ...defaultConfig, ...data, newsletter: {...defaultConfig.newsletter, ...data.newsletter}, socialMediaLinks: data.socialMediaLinks || [] }));
-      } catch (err) {
+        setConfig({ ...defaultConfig, ...data, newsletter: {...defaultConfig.newsletter, ...data.newsletter}, socialMediaLinks: data.socialMediaLinks || [] });
+      } catch {
         setError('خطا در بارگذاری تنظیمات فوتر. از مقادیر پیش‌فرض استفاده می‌شود.');
         setConfig(defaultConfig);
       } finally {
@@ -513,7 +513,7 @@ function FooterConfigEditor({ imported }: { imported: FooterConfigType | null })
       }
     };
     loadConfig();
-  }, [imported]);
+  }, [imported, defaultConfig]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -704,7 +704,7 @@ function HeroConfigEditor({ imported }: { imported: HeroConfigType | null }) {
         setError('');
         const data = await fetchContent<HeroConfigType>('hero.json');
         setConfig(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری تنظیمات هیرو. از مقادیر پیش‌فرض یا خالی استفاده می‌شود.');
         setConfig({
           title: 'Default Hero Title',
@@ -850,7 +850,7 @@ function HeaderConfigEditor({ imported }: { imported: HeaderConfigType | null })
         setError('');
         const data = await fetchContent<HeaderConfigType>('header.json');
         setNavLinks(data.navLinks || []);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری تنظیمات هدر. از مقادیر پیش‌فرض یا خالی استفاده می‌شود.');
         setNavLinks([{ id: '1', label: 'Home (Default)', target: '#hero', icon: 'Home' }]);
       } finally {
@@ -1191,7 +1191,7 @@ function FAQEditor({ imported }: { imported: FAQItem[] | null }) {
         <div className="bg-base-200 p-4 rounded-lg">
           <h3 className="font-bold mb-4">پیش‌نمایش سوالات متداول</h3>
           <ul className="space-y-2">
-            {draft.map((item, i) => (
+            {draft.map((item) => (
               <li key={item.id} className="border-b pb-2">
                 <div className="font-bold">{item.question}</div>
                 <div>{item.answer}</div>
@@ -1299,7 +1299,7 @@ function GalleryEditor({ imported }: { imported: GalleryItem[] | null }) {
         setIsLoading(true);
         const data = await fetchContent<GalleryItem[]>('gallery.json');
         setGalleryItems(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری گالری');
       } finally {
         setIsLoading(false);
@@ -1566,7 +1566,7 @@ function PastEventsEditor({ imported }: { imported: PastEvent[] | null }) {
         setIsLoading(true);
         const data = await fetchContent<PastEvent[]>('past-events.json');
         setEvents(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری رویدادها');
       } finally {
         setIsLoading(false);
@@ -1762,7 +1762,7 @@ function SponsorsEditor({ imported }: { imported: Sponsor[] | null }) {
         setIsLoading(true);
         const data = await fetchContent<Sponsor[]>('sponsors.json');
         setSponsors(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری حامیان');
       } finally {
         setIsLoading(false);
@@ -1992,7 +1992,7 @@ function StatsEditor({ imported }: { imported: Stat[] | null }) {
         setIsLoading(true);
         const data = await fetchContent<Stat[]>('stats.json');
         setStats(data);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری آمار');
       } finally {
         setIsLoading(false);
@@ -2191,9 +2191,9 @@ function UpcomingEventEditor({ imported }: { imported: UpcomingEvent[] | null })
       try {
         setIsLoading(true);
         const data = await fetchContent<UpcomingEvent[] | UpcomingEvent>('upcoming-event.json');
-        let arr: UpcomingEvent[] = Array.isArray(data) ? data : [data];
+        const arr: UpcomingEvent[] = Array.isArray(data) ? data : [data];
         setEvents(arr);
-      } catch (err) {
+      } catch {
         setError('خطا در بارگذاری رویدادهای آینده');
       } finally {
         setIsLoading(false);
@@ -2421,7 +2421,10 @@ function GlobalImportExportBar({ onImport }: { onImport: (data: Record<string, a
           const text = await res.text();
           zip.file(file, text);
         }
-      } catch {}
+      } catch (e) {
+        // Silently ignore errors for missing files, or log them
+        console.warn(`Could not fetch ${file} for ZIP export:`, e);
+      }
     }
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
@@ -2476,9 +2479,9 @@ function useCMSTheme() {
 function Sidebar({ activeSection, setActiveSection }: { activeSection: string, setActiveSection: (key: string) => void }) {
   const icons: Record<string, JSX.Element> = {
     'global-settings': <Settings size={20} />,
-    'header-config': <LayoutHeader size={20} />,
+    'header-config': <LayoutPanelTop size={20} />,
     'hero-config': <LayoutDashboard size={20} />,
-    'footer-config': <LayoutPanelBottom size={20} />,
+    'footer-config': <PanelBottom size={20} />,
     'contact-form-config': <MessageSquare size={20} />,
     faq: <HelpCircle size={20} />, 
     gallery: <ImageIcon size={20} />, 
@@ -2537,9 +2540,9 @@ function TopBar({ onHelp, theme, toggleTheme, onLogout }: { onHelp: () => void, 
 function FloatingQuickNav({ activeSection, setActiveSection }: { activeSection: string, setActiveSection: (key: string) => void }) {
   const icons: Record<string, JSX.Element> = {
     'global-settings': <Settings size={18} />,
-    'header-config': <LayoutHeader size={18} />,
+    'header-config': <LayoutPanelTop size={18} />,
     'hero-config': <LayoutDashboard size={18} />,
-    'footer-config': <LayoutPanelBottom size={18} />,
+    'footer-config': <PanelBottom size={18} />,
     'contact-form-config': <MessageSquare size={18} />,
     faq: <HelpCircle size={18} />, 
     gallery: <ImageIcon size={18} />, 

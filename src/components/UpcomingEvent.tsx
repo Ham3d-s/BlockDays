@@ -32,7 +32,7 @@ const DEMO_MODE = false; // Set to true for demo/testing with new features
 // Share functionality (adapted from PastEvents.tsx)
 const SHARE_SLOGAN = 'بلاک‌دِیز، ویترین حوزه تکنولوژی ایران';
 
-interface UpcomingEventShare extends UpcomingEvent {} // Type alias for clarity in share functions
+type UpcomingEventShare = UpcomingEvent; // Type alias for clarity in share functions
 
 const getShareText = (event: UpcomingEventShare) => {
   let text = event.title;
@@ -236,8 +236,8 @@ const UpcomingEvent: React.FC = () => {
           events: finalEventsToShow.slice(0, 3)
         });
 
-      } catch (err) {
-        console.error("Error loading events, falling back to default events for supplementation:", err);
+      } catch {
+        console.error("Error loading events, falling back to default events for supplementation:"); // Removed err from console
         setError('خطا در بارگذاری رویدادهای آینده. نمایش رویدادهای پیش‌فرض در صورت امکان.');
         setPageData({
             title: "رویدادهای آینده (خطا)",
