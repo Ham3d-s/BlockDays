@@ -34,6 +34,21 @@ const renderAltContactIcon = (iconName?: string) => {
   return <IconComponent size={18} />;
 };
 
+const defaultContent: ContactFormConfig = {
+  sectionTitle: "در تماس باشید",
+  sectionSubtitle: "سوال، پیشنهاد یا انتقادی دارید؟ فرم زیر را پر کنید یا از طریق راه‌های ارتباطی دیگر با ما در میان بگذارید.",
+  labels: { name: "نام و نام خانوادگی", email: "آدرس ایمیل", message: "پیام شما" },
+  placeholders: { name: "مثال: مریم رضایی", email: "مثال: user@example.com", message: "متن پیام خود را اینجا بنویسید..." },
+  buttonText: "ارسال پیام",
+  buttonTextSubmitting: "در حال ارسال...",
+  successMessage: "پیام شما با موفقیت ارسال شد. سپاس از شما!",
+  errorMessage: "خطا در ارسال پیام. لطفاً دوباره تلاش کنید یا از روش‌های دیگر استفاده نمایید.",
+  alternativeContactTitle: "یا از این طریق با ما در ارتباط باشید:",
+  alternativeContactLinks: [
+    {id: "email-alt", text: "info@blockdays.com", url:"mailto:info@blockdays.com", icon: "Mail"},
+    {id: "twitter-alt", text: "توییتر رسمی", url:"https://twitter.com/BlockDaysIran", icon: "Twitter"},
+  ]
+};
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -61,23 +76,7 @@ const ContactForm: React.FC = () => {
       }
     };
     loadData();
-  }, [defaultContent]);
-
-  const defaultContent: ContactFormConfig = {
-    sectionTitle: "در تماس باشید",
-    sectionSubtitle: "سوال، پیشنهاد یا انتقادی دارید؟ فرم زیر را پر کنید یا از طریق راه‌های ارتباطی دیگر با ما در میان بگذارید.",
-    labels: { name: "نام و نام خانوادگی", email: "آدرس ایمیل", message: "پیام شما" },
-    placeholders: { name: "مثال: مریم رضایی", email: "مثال: user@example.com", message: "متن پیام خود را اینجا بنویسید..." },
-    buttonText: "ارسال پیام",
-    buttonTextSubmitting: "در حال ارسال...",
-    successMessage: "پیام شما با موفقیت ارسال شد. سپاس از شما!",
-    errorMessage: "خطا در ارسال پیام. لطفاً دوباره تلاش کنید یا از روش‌های دیگر استفاده نمایید.",
-    alternativeContactTitle: "یا از این طریق با ما در ارتباط باشید:",
-    alternativeContactLinks: [
-      {id: "email-alt", text: "info@blockdays.com", url:"mailto:info@blockdays.com", icon: "Mail"},
-      {id: "twitter-alt", text: "توییتر رسمی", url:"https://twitter.com/BlockDaysIran", icon: "Twitter"},
-    ]
-  };
+  }, []); // defaultContent is now defined in module scope, so it's a stable dependency
   
   const currentContent = content || defaultContent;
 

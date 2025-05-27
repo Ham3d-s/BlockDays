@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, MouseEvent, TouchEvent as ReactTouchEvent } from 'react'; // Added ReactTouchEvent
+import React, { useState, useEffect, useRef, useMemo, MouseEvent, TouchEvent as ReactTouchEvent } from 'react'; // Added useMemo, ReactTouchEvent
 import { fetchContent } from '../utils/api';
 import { Maximize, Download } from 'lucide-react';
 
