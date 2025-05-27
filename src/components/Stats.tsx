@@ -46,7 +46,7 @@ const initialPageData: StatsPageData = {
 const Stats: React.FC = () => {
   const [pageData, setPageData] = useState<StatsPageData>(initialPageData);
   const [transformedStats, setTransformedStats] = useState<StatItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true); // This was unused
   // const [error, setError] = useState(''); // Optional: for displaying fetch errors
 
   const statsRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ const Stats: React.FC = () => {
 
   useEffect(() => {
     const loadStats = async () => {
-      setIsLoading(true);
+      // setIsLoading(true); // isLoading is unused
       try {
         const data = await fetchContent<StatsPageData>('stats.json');
         setPageData({
@@ -89,7 +89,7 @@ const Stats: React.FC = () => {
         // setError('Failed to load stats. Using default data.'); // Optional: set error state
         setPageData(initialPageData); // Fallback to initial data on error
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false); // isLoading is unused
       }
     };
     loadStats();

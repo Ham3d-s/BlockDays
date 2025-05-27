@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fetchContent } from '../utils/api';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react'; // Removed HelpCircle
+import { Search } from 'lucide-react'; // Removed HelpCircle, ChevronDown, ChevronUp
 
 interface FAQItem {
   id: string;
