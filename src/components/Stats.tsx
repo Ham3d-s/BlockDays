@@ -53,29 +53,29 @@ const Stats: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { observeElement } = useIntersectionObserver();
 
-  useEffect(() => {
-    // Helper function to map icon string to ReactNode, placed inside useEffect or outside component if static
-    const mapIconStringToNode = (iconString?: string): React.ReactNode => {
-      const iconProps = { className: "w-10 h-10" };
-      switch (iconString?.toLowerCase()) {
-        case 'award': return <Award {...iconProps} />;
-        case 'users2': return <Users2 {...iconProps} />;
-        case 'clock': return <Clock {...iconProps} />;
-        case 'event': return <CalendarDays {...iconProps} />;
-        case 'calendar_today': return <CalendarClock {...iconProps} />;
-        case 'people': return <Users {...iconProps} />;
-        case 'groups': return <UsersRound {...iconProps} />;
-        case 'business': return <Briefcase {...iconProps} />;
-        case 'events': return <Award {...iconProps} />;
-        case 'participants': return <Users {...iconProps} />;
-        case 'speakers': return <Users2 {...iconProps} />;
-        case 'hours': return <Clock {...iconProps} />;
-        default:
-          console.warn(`Unknown icon string: ${iconString}, using default HelpCircle.`);
-          return <HelpCircle {...iconProps} />;
-      }
-    };
+  // Define mapIconStringToNode once in the component scope
+  const mapIconStringToNode = (iconString?: string): React.ReactNode => {
+    const iconProps = { className: "w-10 h-10" };
+    switch (iconString?.toLowerCase()) {
+      case 'award': return <Award {...iconProps} />;
+      case 'users2': return <Users2 {...iconProps} />;
+      case 'clock': return <Clock {...iconProps} />;
+      case 'event': return <CalendarDays {...iconProps} />;
+      case 'calendar_today': return <CalendarClock {...iconProps} />;
+      case 'people': return <Users {...iconProps} />;
+      case 'groups': return <UsersRound {...iconProps} />;
+      case 'business': return <Briefcase {...iconProps} />;
+      case 'events': return <Award {...iconProps} />;
+      case 'participants': return <Users {...iconProps} />;
+      case 'speakers': return <Users2 {...iconProps} />;
+      case 'hours': return <Clock {...iconProps} />;
+      default:
+        console.warn(`Unknown icon string: ${iconString}, using default HelpCircle.`);
+        return <HelpCircle {...iconProps} />;
+    }
+  };
 
+  useEffect(() => {
     const loadStats = async () => {
       setIsLoading(true);
       try {
@@ -109,25 +109,8 @@ const Stats: React.FC = () => {
         setTransformedStats(mappedItems);
     };
 
-    // Re-define mapIconStringToNode here if not defined in the outer scope or passed as prop
-    const mapIconStringToNode = (iconString?: string): React.ReactNode => {
-      const iconProps = { className: "w-10 h-10" };
-      switch (iconString?.toLowerCase()) {
-        case 'award': return <Award {...iconProps} />;
-        case 'users2': return <Users2 {...iconProps} />;
-        case 'clock': return <Clock {...iconProps} />;
-        case 'event': return <CalendarDays {...iconProps} />;
-        case 'calendar_today': return <CalendarClock {...iconProps} />;
-        case 'people': return <Users {...iconProps} />;
-        case 'groups': return <UsersRound {...iconProps} />;
-        case 'business': return <Briefcase {...iconProps} />;
-        case 'events': return <Award {...iconProps} />;
-        case 'participants': return <Users {...iconProps} />;
-        case 'speakers': return <Users2 {...iconProps} />;
-        case 'hours': return <Clock {...iconProps} />;
-        default: return <HelpCircle {...iconProps} />;
-      }
-    };
+    // mapIconStringToNode is now defined in the component scope, so it's accessible here
+    // No need to redefine it.
 
     if (pageData.items) {
         transformAndSetStats(pageData.items);

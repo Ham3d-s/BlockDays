@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { validateName, validateEmail, validateMessage } from '../utils/validation';
-import { Mail, MessageSquareText, User, Send, Linkedin, Twitter, Send as TelegramIcon, ExternalLink, Info } from 'lucide-react';
+import { Mail, MessageSquareText, User, Send, Linkedin, Twitter, Send as TelegramIcon, ExternalLink, Info, Users } from 'lucide-react';
 import { fetchContent } from '../utils/api';
 
 interface ContactFormLabels { name: string; email: string; message: string; }

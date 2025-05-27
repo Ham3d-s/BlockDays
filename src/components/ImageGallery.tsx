@@ -419,37 +419,3 @@ const ImageGallery: React.FC = () => {
 };
 
 export default ImageGallery;
-    src: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
-    title: 'همایش بلاکچین تهران', 
-    description: 'نمایی از سالن اصلی همایش بلاکچین تهران با حضور پرشور شرکت‌کنندگان.',
-    alt: 'سالن اصلی همایش بلاکچین تهران'
-  },
-  { 
-    id: 'demo2', 
-    src: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
-    title: 'کارگاه قراردادهای هوشمند', 
-    description: 'شرکت‌کنندگان در حال یادگیری عملی توسعه قراردادهای هوشمند.',
-    alt: 'کارگاه عملی قراردادهای هوشمند'
-  },
-  { 
-    id: 'demo3', 
-    src: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-    thumbnailSrc: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
-    title: 'شبکه‌سازی در رویداد', 
-    description: 'فرصت‌های شبکه‌سازی و گفتگو بین متخصصان و علاقه‌مندان.',
-    alt: 'شبکه‌سازی در رویداد بلاکچین'
-  },
-  { 
-    id: 'demo4', 
-    src: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-    thumbnailSrc: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
-    title: 'ارائه کلیدی', 
-    description: 'یکی از سخنرانان برجسته در حال ارائه مطلب در مورد آینده وب ۳.',
-    alt: 'سخنرانی در مورد آینده وب ۳'
-  },
-   { 
-    id: 'demo5', 
-    src: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
