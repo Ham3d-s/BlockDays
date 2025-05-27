@@ -69,7 +69,7 @@ const Sponsors: React.FC = () => {
         try {
           const fetchedData = await fetchContent<SponsorsPageData>('sponsors.json');
           pageTitle = fetchedData?.title || pageTitle;
-          liveSponsors = (fetchedData?.items || []).map((item: any) => ({
+          const liveSponsors = (fetchedData?.items || []).map((item: any) => ({
               id: item.id || `live-id-${Math.random().toString(36).substr(2, 9)}`,
               name: item.name || "Unnamed Sponsor",
               logo: item.logo,
@@ -186,32 +186,3 @@ const Sponsors: React.FC = () => {
 };
 
 export default Sponsors;
-  { id: 'p2', name: 'فناوری‌های بلاکچین آینده', logo: '/images/sponsors/platinum-logo-2.svg', tier: 'Platinum', description: 'توسعه‌دهنده راه‌حل‌های سازمانی مبتنی بر بلاکچین برای صنایع مختلف.', websiteUrl: 'https://example-platinum2.com' },
-  // Gold
-  { id: 'g1', name: 'آکادمی بلاکچین ایران', logo: '/images/sponsors/gold-logo-1.svg', tier: 'Gold', description: 'مرکز تخصصی آموزش و پژوهش در حوزه بلاکچین و رمزارزها.', websiteUrl: 'https://example-gold1.com' },
-  { id: 'g2', name: 'کیف پول امن دیجیتال', logo: '/images/sponsors/gold-logo-2.svg', tier: 'Gold', description: 'ارائه‌دهنده راه‌کارهای امن نگهداری دارایی‌های دیجیتال.', websiteUrl: 'https://example-gold2.com' },
-  { id: 'g3', name: 'سرمایه‌گذاری جسورانه کریپتو', logo: '/images/sponsors/gold-logo-3.svg', tier: 'Gold', description: 'صندوق سرمایه‌گذاری خطرپذیر متخصص در پروژه‌های نوآورانه بلاکچینی.', websiteUrl: 'https://example-gold3.com' },
-  // Silver
-  { id: 's1', name: 'استودیو بازی‌سازی وب۳', logo: '/images/sponsors/silver-logo-1.svg', tier: 'Silver', description: 'خلق تجربه‌های نوین بازی با استفاده از تکنولوژی بلاکچین و NFT.', websiteUrl: 'https://example-silver1.com' },
-  { id: 's2', name: 'پلتفرم وام‌دهی دیفای', logo: '/images/sponsors/silver-logo-2.svg', tier: 'Silver', description: 'ارائه خدمات وام‌دهی غیرمتمرکز با استفاده از قراردادهای هوشمند.', websiteUrl: 'https://example-silver2.com' },
-  { id: 's3', name: 'مشاوره حقوقی رمزارز', logo: '/images/sponsors/silver-logo-3.svg', tier: 'Silver', description: 'ارائه خدمات مشاوره حقوقی تخصصی در حوزه رمزارزها و بلاکچین.', websiteUrl: 'https://example-silver3.com' },
-  { id: 's4', name: 'رسانه خبری بلاکچین', logo: '/images/sponsors/silver-logo-4.svg', tier: 'Silver', description: 'پوشش آخرین اخبار و تحلیل‌های دنیای بلاکچین و ارزهای دیجیتال.', websiteUrl: 'https://example-silver4.com' },
-  // Community
-  { id: 'c1', name: 'انجمن بلاکچین ایران', logo: '/images/sponsors/community-logo-1.svg', tier: 'Community', description: 'حمایت از رشد و توسعه جامعه بلاکچین در ایران.', websiteUrl: 'https://example-community1.com' },
-  { id: 'c2', name: 'گروه توسعه‌دهندگان اتریوم تهران', logo: '/images/sponsors/community-logo-2.svg', tier: 'Community', description: 'برگزاری میت‌آپ‌ها و کارگاه‌های آموزشی برای توسعه‌دهندگان.', websiteUrl: 'https://example-community2.com' },
-  // Adding more demo sponsors to reach at least 18 for the 3x6 grid if possible
-  { id: 'p3', name: 'پلتفرم معاملاتی نوین', logo: '/images/sponsors/platinum-logo-3.svg', tier: 'Platinum', description: 'ارائه دهنده پلتفرم پیشرفته برای معاملات رمزارز.', websiteUrl: 'https://example-platinum3.com' },
-  { id: 'g4', name: 'مرکز نوآوری بلاکچین', logo: '/images/sponsors/gold-logo-4.svg', tier: 'Gold', description: 'حمایت از استارتاپ های بلاکچینی.', websiteUrl: 'https://example-gold4.com' },
-  { id: 's5', name: 'خدمات احراز هویت دیجیتال', logo: '/images/sponsors/silver-logo-5.svg', tier: 'Silver', description: 'راهکارهای امن برای احراز هویت.', websiteUrl: 'https://example-silver5.com' },
-  { id: 'c3', name: 'جامعه برنامه‌نویسان پایتون', logo: '/images/sponsors/community-logo-3.svg', tier: 'Community', description: 'گردهمایی و اشتراک دانش بین برنامه‌نویسان.', websiteUrl: 'https://example-community3.com' },
-  { id: 'p4', name: 'شرکت داده‌پردازی ابری', logo: '/images/sponsors/platinum-logo-4.svg', tier: 'Platinum', description: 'زیرساخت ابری مطمئن برای پروژه‌های بزرگ.', websiteUrl: 'https://example-platinum4.com' },
-  { id: 'g5', name: 'مشاوران سرمایه‌گذاری دیجیتال', logo: '/images/sponsors/gold-logo-5.svg', tier: 'Gold', description: 'راهنمایی برای سرمایه‌گذاری هوشمند در رمزارزها.', websiteUrl: 'https://example-gold5.com' },
-  { id: 's6', name: 'توسعه‌دهنده اپلیکیشن‌های غیرمتمرکز', logo: '/images/sponsors/silver-logo-6.svg', tier: 'Silver', description: 'ساخت dApp های کاربردی و نوآورانه.', websiteUrl: 'https://example-silver6.com' },
-  { id: 'c4', name: 'کانون کارآفرینی فناوری', logo: '/images/sponsors/community-logo-4.svg', tier: 'Community', description: 'حمایت از کارآفرینان در حوزه فناوری.', websiteUrl: 'https://example-community4.com' },
-  { id: 's7', name: 'آژانس مارکتینگ وب ۳', logo: '/images/sponsors/silver-logo-7.svg', tier: 'Silver', description: 'خدمات تخصصی بازاریابی برای پروژه‌های وب ۳.', websiteUrl: 'https://example-silver7.com' },
-  { id: 's8', name: 'پلتفرم آموزشی آنلاین کریپتو', logo: '/images/sponsors/silver-logo-8.svg', tier: 'Silver', description: 'دوره‌های جامع آموزشی در زمینه ارزهای دیجیتال.', websiteUrl: 'https://example-silver8.com' },
-];
-
-// Tier configuration and mapOldTypeToTier REMOVED
-
-const Sponsors: React.FC = () => {
