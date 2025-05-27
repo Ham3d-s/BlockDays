@@ -1,0 +1,22 @@
+{
+  "navLinks": [
+    {
+      "id": "1",
+      "label": "Home",
+      "target": "#hero",
+      "icon": "Home"
+    },
+    {
+      "id": "2",
+      "label": "About",
+      "target": "#about",
+      "icon": "Info"
+    },
+    {
+      "id": "3",
+      "label": "Sponsors",
+      "target": "#sponsors",
+      "icon": "Star"
+    }
+  ]
+}

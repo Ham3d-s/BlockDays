@@ -1,0 +1,26 @@
+{
+  "brandName": "BlockDays Default",
+  "description": "Stay connected with the latest updates and insights from the BlockDays community.",
+  "newsletter": {
+    "title": "Subscribe to our Newsletter",
+    "description": "Get the latest news, event updates, and articles directly in your inbox.",
+    "placeholder": "Enter your email address",
+    "buttonText": "Subscribe",
+    "privacyNote": "We respect your privacy. No spam."
+  },
+  "copyrightText": "© {year} BlockDays. All rights reserved.",
+  "socialMediaLinks": [
+    {
+      "id": "1",
+      "name": "Twitter",
+      "url": "https://twitter.com/blockdays",
+      "icon": "Twitter"
+    },
+    {
+      "id": "2",
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/company/blockdays",
+      "icon": "Linkedin"
+    }
+  ]
+}

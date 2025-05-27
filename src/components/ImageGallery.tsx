@@ -37,63 +37,84 @@ interface GalleryImage {
   height?: number;      // Optional: for better layout if known
 }
 
+interface GalleryPageData {
+  title: string;
+  items: OriginalGalleryItem[]; // Original items from JSON
+}
+
 const DEMO_MODE = false; // Enable to use hardcoded demo images
 
-const DEMO_IMAGES: GalleryImage[] = [
+const DEMO_GALLERY_DATA: GalleryPageData = {
+  title: "گالری تصاویر (پیش‌فرض)",
+  items: [
   { 
     id: 'demo1', 
-    src: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnail: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'همایش بلاکچین تهران', 
     description: 'نمایی از سالن اصلی همایش بلاکچین تهران با حضور پرشور شرکت‌کنندگان.',
-    alt: 'سالن اصلی همایش بلاکچین تهران'
+    type: 'image'
   },
   { 
     id: 'demo2', 
-    src: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnail: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'کارگاه قراردادهای هوشمند', 
     description: 'شرکت‌کنندگان در حال یادگیری عملی توسعه قراردادهای هوشمند.',
-    alt: 'کارگاه عملی قراردادهای هوشمند'
+    type: 'image'
   },
   { 
     id: 'demo3', 
-    src: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-    thumbnailSrc: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'شبکه‌سازی در رویداد', 
     description: 'فرصت‌های شبکه‌سازی و گفتگو بین متخصصان و علاقه‌مندان.',
-    alt: 'شبکه‌سازی در رویداد بلاکچین'
+    type: 'image'
   },
   { 
     id: 'demo4', 
-    src: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-    thumbnailSrc: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'ارائه کلیدی', 
     description: 'یکی از سخنرانان برجسته در حال ارائه مطلب در مورد آینده وب ۳.',
-    alt: 'سخنرانی در مورد آینده وب ۳'
+    type: 'image'
   },
    { 
     id: 'demo5', 
-    src: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
-    thumbnailSrc: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnail: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'غرفه‌های نمایشگاهی', 
     description: 'بازدید از غرفه‌های شرکت‌های فعال در حوزه بلاکچین.',
-    alt: 'غرفه‌های نمایشگاهی شرکت‌های بلاکچینی'
+    type: 'image'
   },
   { 
     id: 'demo6', 
-    src: 'https://images.unsplash.com/photo-1638913971316-a883170e3999?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-    thumbnailSrc: 'https://images.unsplash.com/photo-1638913971316-a883170e3999?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    url: 'https://images.unsplash.com/photo-1638913971316-a883170e3999?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1638913971316-a883170e3999?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
     title: 'میت‌آپ جامعه توسعه‌دهندگان', 
     description: 'دورهمی صمیمانه توسعه‌دهندگان برای تبادل دانش و تجربه.',
-    alt: 'میت‌آپ جامعه توسعه‌دهندگان بلاکچین'
-  }
-];
+    type: 'image'
+  }]
+};
+
+// Helper to transform OriginalGalleryItem[] from DEMO_GALLERY_DATA.items to GalleryImage[]
+const transformToGalleryImages = (items: OriginalGalleryItem[]): GalleryImage[] => {
+  return items
+    .filter(item => item.type === 'image' || (!item.url?.endsWith('.mp4') && !item.type))
+    .map(item => ({
+      id: item.id,
+      src: item.url,
+      thumbnailSrc: item.thumbnail || item.url,
+      title: item.title,
+      description: item.description,
+      alt: item.title || item.description,
+  }));
+};
 
 
 const ImageGallery: React.FC = () => {
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [galleryPageData, setGalleryPageData] = useState<GalleryPageData>(DEMO_MODE ? DEMO_GALLERY_DATA : { title: "گالری تصاویر رویدادها", items: [] });
+  const [isLoading, setIsLoading] = useState(!DEMO_MODE);
   const [error, setError] = useState('');
   
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -109,39 +130,28 @@ const ImageGallery: React.FC = () => {
 
 
   useEffect(() => {
+    if (DEMO_MODE) return;
+
     const loadGalleryData = async () => {
       try {
         setIsLoading(true);
-        let dataToProcess: GalleryImage[];
-
-        if (DEMO_MODE) {
-          dataToProcess = DEMO_IMAGES;
-        } else {
-          const originalData = await fetchContent<OriginalGalleryItem[]>('gallery.json');
-          const imageItems = originalData.filter(item => 
-            item.type === 'image' || (!item.url?.endsWith('.mp4') && !item.type) // Basic filter for images
-          );
-          // Transform originalData to GalleryImage format
-          dataToProcess = imageItems.map(item => ({
-            id: item.id,
-            src: item.url,
-            thumbnailSrc: item.thumbnail || item.url, // Fallback to full url if thumbnail specific not present
-            title: item.title,
-            description: item.description,
-            alt: item.title || item.description, // Use title or description as alt text
-          }));
-        }
-        setGalleryImages(dataToProcess);
+        const data = await fetchContent<GalleryPageData>('gallery.json');
+        setGalleryPageData({
+          title: data?.title || "گالری تصاویر رویدادها",
+          items: data?.items || []
+        });
       } catch (err) {
         console.error('Failed to load image gallery:', err);
         setError('خطا در بارگذاری تصاویر گالری. لطفاً بعداً دوباره تلاش کنید.');
-        if (DEMO_MODE) setGalleryImages(DEMO_IMAGES); // Fallback to demo data on error in demo mode
+        setGalleryPageData({ title: "گالری تصاویر (خطا)", items: DEMO_GALLERY_DATA.items }); // Fallback to demo data
       } finally {
         setIsLoading(false);
       }
     };
     loadGalleryData();
   }, []);
+
+  const galleryImages = useMemo(() => transformToGalleryImages(galleryPageData.items), [galleryPageData.items]);
 
   useEffect(() => {
     if (trackRef.current && galleryImages.length > 0 && !isLoading) {
@@ -285,7 +295,7 @@ const ImageGallery: React.FC = () => {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 md:mb-16 text-primary">
           {/* ImageIconLucide removed from title */}
-          گالری تصاویر رویدادها
+          {galleryPageData.title}
         </h2>
         
         <div className="gallery-container w-full overflow-hidden relative py-4">
@@ -409,3 +419,37 @@ const ImageGallery: React.FC = () => {
 };
 
 export default ImageGallery;
+    src: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnailSrc: 'https://images.unsplash.com/photo-1587614382346-4ec5e1ba3813?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    title: 'همایش بلاکچین تهران', 
+    description: 'نمایی از سالن اصلی همایش بلاکچین تهران با حضور پرشور شرکت‌کنندگان.',
+    alt: 'سالن اصلی همایش بلاکچین تهران'
+  },
+  { 
+    id: 'demo2', 
+    src: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnailSrc: 'https://images.unsplash.com/photo-1639755944936-55990d616cf6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    title: 'کارگاه قراردادهای هوشمند', 
+    description: 'شرکت‌کنندگان در حال یادگیری عملی توسعه قراردادهای هوشمند.',
+    alt: 'کارگاه عملی قراردادهای هوشمند'
+  },
+  { 
+    id: 'demo3', 
+    src: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+    thumbnailSrc: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    title: 'شبکه‌سازی در رویداد', 
+    description: 'فرصت‌های شبکه‌سازی و گفتگو بین متخصصان و علاقه‌مندان.',
+    alt: 'شبکه‌سازی در رویداد بلاکچین'
+  },
+  { 
+    id: 'demo4', 
+    src: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+    thumbnailSrc: 'https://images.unsplash.com/photo-1642104790599-71a11cb74903?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
+    title: 'ارائه کلیدی', 
+    description: 'یکی از سخنرانان برجسته در حال ارائه مطلب در مورد آینده وب ۳.',
+    alt: 'سخنرانی در مورد آینده وب ۳'
+  },
+   { 
+    id: 'demo5', 
+    src: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80', 
+    thumbnailSrc: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=70',
